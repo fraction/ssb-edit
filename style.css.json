@@ -1,0 +1,1 @@
+".hyperscroll {\n  width: 100%;\n}\n\n.hyperscroll > .content {\n  max-width: 680px;\n  margin-left: auto;\n  margin-right: auto;\n}\n\n\n.message {\n  display: block;\n  margin-top: .25em;\n  margin-bottom: .25em;\n}\n"
