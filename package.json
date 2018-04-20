@@ -37,6 +37,7 @@
     "ssb-links": "^3.0.3",
     "ssb-markdown": "^3.6.0",
     "ssb-query": "^2.0.1",
-    "ssb-ref": "^2.9.1"
+    "ssb-ref": "^2.9.1",
+    "visualize-buffer": "0.0.1"
   }
 }
