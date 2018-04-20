@@ -40,6 +40,9 @@ module.exports = {
         CACHE[e.key] = CACHE[e.key] || e.value
       })
     )
+  }),
+  query: rec.source(function (query) {
+    return sbot.query.read(query)
   })
 }
 
