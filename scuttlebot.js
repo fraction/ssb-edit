@@ -41,6 +41,14 @@ module.exports = {
       })
     )
   }),
+  userStream: rec.source(function (config) {
+    return pull(
+      sbot.createUserStream(config),
+      pull.through(function (e) {
+        CACHE[e.key] = CACHE[e.key] || e.value
+      })
+    )
+  }),
   query: rec.source(function (query) {
     return sbot.query.read(query)
   })
