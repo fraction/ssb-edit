@@ -14,3 +14,7 @@
   margin-top: .25em;
   margin-bottom: .25em;
 }
+
+.timestamp {
+  float: right;
+}
