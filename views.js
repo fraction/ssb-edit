@@ -17,9 +17,6 @@ module.exports.logstream = function () {
   function createStream (opts) {
     return pull(
       More(sbot.createLogStream, opts),
-      pull.filter(function (data) {
-        return 'string' === typeof data.value.content.text
-      }),
       pull.map(function (msg) {
         return h('div.message', render(msg))
       })

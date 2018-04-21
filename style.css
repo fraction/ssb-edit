@@ -18,3 +18,9 @@
 .timestamp {
   float: right;
 }
+
+.avatar--small img {
+  vertical-align: top;
+  width: 2.5em;
+  height: 2.5em;
+}
