@@ -19,5 +19,9 @@ npm start
 
 It should launch a browser window, and comes pre-configured to use the main ssb network by default. If you already have an `.ssb` folder, mvd should 'just work'.
 
+### history
+
+`mvd` is coded from scratch, but may have some code overlap with [minbase](http://github.com/evbogue/minbase) and [patchless](http://github.com/dominictarr/patchless)
+
 ---
 MIT
