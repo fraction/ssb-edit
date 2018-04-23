@@ -1,13 +1,22 @@
 var h = require('hyperscript')
 
 var human = require('human-time')
-
+var ref = require('ssb-ref')
 var avatar = require('./avatar')
 
 var markdown = require('ssb-markdown')
 var config = require('./config')()
 
-var rawJSON = require('patchapp-raw/json')
+function rawJSON (obj) {
+  return JSON.stringify(obj, null, 2)
+      .split(/([%@&][a-zA-Z0-9\/\+]{43}=*\.[\w]+)/)
+      .map(function (e) {
+        if(ref.isMsg(e) || ref.isFeed(e) || ref.isBlob(e)) {
+          return h('a', {href: '#' + e}, e)
+        }
+        return e
+      })
+}
 
 module.exports = function (msg) {
   if (msg.value.content.type == 'post') {
@@ -36,7 +45,7 @@ module.exports = function (msg) {
         )
       ),
       h('span.timestamp', h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp)))),
-      h('pre.raw__json', {id: msg.key}, rawJSON(msg))  
+      h('pre', rawJSON(msg.value.content))  
     )
   }
 }
