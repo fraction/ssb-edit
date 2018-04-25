@@ -61,6 +61,7 @@ if (argv[0] == 'server') {
     .use(require('ssb-query'))
     .use(require('ssb-links'))
     .use(require('ssb-ebt'))
+    .use(require('ssb-ooo'))
     .use(require('scuttlebot/plugins/invite'))
     .use(require('scuttlebot/plugins/local'))
     .use(require('decent-ssb/plugins/ws'))
