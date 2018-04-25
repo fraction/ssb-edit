@@ -18,7 +18,7 @@ module.exports.logstream = function () {
     return pull(
       More(sbot.createLogStream, opts),
       pull.map(function (msg) {
-        return h('div.message', render(msg))
+        return h('div', render(msg))
       })
     )
   }
@@ -79,7 +79,7 @@ module.exports.userstream = function (src) {
     return pull(
       More(sbot.userStream, opts, ['value', 'sequence']),
       pull.map(function (msg) {
-        return h('div.message', render(msg))
+        return h('div', render(msg))
       })
     )
   }
@@ -115,13 +115,13 @@ module.exports.get = function (src) {
       if (err) { console.log('could not find root')}
       data.value = data
       data.key = root
-      content.appendChild(h('div.message', render(data)))
+      content.appendChild(h('div', render(data)))
       pull(
         sbot.links({rel: 'root', dest: root, values: true, keys: true, live: true}),
         pull.drain(function (msg) {
           console.log(msg)
           if (msg.value)
-            content.appendChild(h('div.message', render(msg)))
+            content.appendChild(h('div', render(msg)))
         })
       )
     })
