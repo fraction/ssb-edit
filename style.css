@@ -19,11 +19,16 @@ a {
   margin-right: auto;
 }
 
-.message {
+.message, .embedded {
   display: block;
-  margin: .5em;
+  margin: .6em;
   background: #111;
   padding: .5em;
+}
+
+.embedded {
+  border-left: 1px solid #666;
+  padding-left: 1em;
 }
 
 .message img {
@@ -42,6 +47,7 @@ a {
 }
 
 .emoji {
+  float: left;
   width: 1.4em;
   vertical-align: top;
 }
