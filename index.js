@@ -12,8 +12,6 @@ window.onhashchange = function () {
  window.location.reload()
 }
 
-console.log(src)
-
 if (src == 'raw') {
   views.rawstream()  
 } else if (ref.isFeed(src)) { 
