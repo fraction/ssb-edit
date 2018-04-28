@@ -63,6 +63,29 @@ module.exports = {
   }),
   links: rec.source(function (query) {
     return sbot.links(query)
+  }),
+  addblob: rec.sink(function (cb)  {
+    return sbot.blobs.add(cb)
+  }),
+  publish: rec.async(function (content, cb) {
+    if(content.recps)
+      content = ssbKeys.box(content, content.recps.map(function (e) {
+        return ref.isFeed(e) ? e : e.link
+      }))
+    else if(content.mentions)
+      content.mentions.forEach(function (mention) {
+        if(ref.isBlob(mention.link)) {
+          sbot.blobs.push(mention.link, function (err) {
+            if(err) console.error(err)
+          })
+        }
+      })
+    feed.add(content, function (err, msg) {
+      if(err) console.error(err)
+      else if(!cb) console.log(msg)
+      cb && cb(err, msg)
+    })
   })
+
 }
 
