@@ -6,7 +6,7 @@ var open = require('opn')
 var home = require('os-homedir')()
 var nonPrivate = require('non-private-ip')
 var muxrpcli = require('muxrpcli')
-var yargs = require('yargs')
+var yargs = require('yargs').argv
 
 var SEC = 1e3
 var MIN = 60*SEC

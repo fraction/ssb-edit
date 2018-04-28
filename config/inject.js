@@ -8,9 +8,6 @@ var SEC = 1e3
 var MIN = 60*SEC
 
 module.exports = function (name, override) {
-  if(name == null)
-    name = 'decent'
-
   console.log('Using the ' + name + ' config')
 
   var network
