@@ -6,38 +6,12 @@ var open = require('opn')
 var home = require('os-homedir')()
 var nonPrivate = require('non-private-ip')
 var muxrpcli = require('muxrpcli')
+var yargs = require('yargs')
 
 var SEC = 1e3
 var MIN = 60*SEC
 
-var config = {
-  name: 'ssb',
-  host: nonPrivate.v4 || '',
-  timeout: 0,
-  local: 'true',
-  port: 8008,
-  path: path.join(home, '.ssb'),
-  ws: { port: 8989 },
-  caps: {
-    shs: '1KHLiKZvAvjbY1ziZEHMXawbCEIM6qwjCDm3VYRan/s=',
-    sign: null
-  },
-  friends: {
-    dunbar: 150,
-    hops: 3
-  },
-  gossip: {
-    connections: 3
-  },
-  timers: {
-    connection: 0,
-    reconnect: 5*SEC,
-    ping: 5*MIN,
-    handshake: 5*SEC
-  },
-  master: [],
-  party: true
-}
+var config = require('./config/inject')(yargs.appname || 'decent')
 
 config.keys = ssbKeys.loadOrCreateSync(path.join(config.path, 'secret'))
 
