@@ -29,11 +29,18 @@ function header (msg) {
   )
 }
 
+function messageLink (msglink) {
+  var link = h('span', h('a', {href: '#' + msglink}, msglink.substring(0, 8) + '...'))
+  return link
+}
+
 module.exports = function (msg) {
   var message = h('div.message')
-  message.appendChild(header(msg))
-
   if (msg.value.content.type == 'post') {
+    message.appendChild(header(msg))
+    if (msg.value.content.root) {
+      message.appendChild(h('span', 're: ', messageLink(msg.value.content.root)))
+    }
     message.appendChild(h('div.message__body', 
         {innerHTML: markdown.block(msg.value.content.text, {toUrl: function (url, image) {
           if(url[0] == '%' || url[0] == '@') return '#' + url
@@ -45,6 +52,7 @@ module.exports = function (msg) {
     )
     return message
   } else if (msg.value.content.type == 'vote') {
+    message.appendChild(header(msg))
     var embed = msg.value.content.vote.link
 
     var embedded = h('div.embedded')
@@ -53,23 +61,24 @@ module.exports = function (msg) {
       msg.value = msg
       msg.key = embed
       if (msg.value.content.text) {
-        message.appendChild(h('img.emoji', {src: config.emojiUrl + 'star.png'}))
+        //message.appendChild(h('img.emoji', {src: config.emojiUrl + 'star.png'}))
         message.appendChild(embedded)
         embedded.appendChild(header(msg))
         embedded.appendChild(h('div.message__body',
-          {innerHTML: markdown.block(msg.value.content.text, {toUrl: function (url, image) {
+          {innerHTML: markdown.block(msg.value.content.text.substring(0, 256) + '... ', {toUrl: function (url, image) {
             if(url[0] == '@') return '#' + url
             if(url[0] == '%') return '#' + url
             if(!image) return url
             if(url[0] !== '&') return url
             return config.blobsUrl + url
-          }})}
+          }})}, messageLink(msg.key)
         ))
       }
     })
     return message
   } else { 
-    message.appendChild(h('pre', rawJSON(msg.value.content)))
-    return message
+    //message.appendChild(h('pre', rawJSON(msg.value.content)))
+    //return message
+    return
   }
 }
