@@ -120,6 +120,9 @@ module.exports.get = function (src) {
 
 module.exports.compose = function () {
   screen()
-
-  content.appendChild(h('div.message', compose))
+  var opts = {
+    "root": null,
+    "type": "post"
+  }
+  content.appendChild(h('div.message', compose(opts)))
 }
