@@ -17,7 +17,9 @@ npm run build
 npm start
 ```
 
-It should launch a browser window, and comes pre-configured to use the main ssb network by default. If you already have an `.ssb` folder, mvd should 'just work'.
+It should launch a browser window, and comes pre-configured to use the Decent network by default. If you already have an `.decent` folder, mvd should 'just work'.
+
+If you want to use `mvd` on the main ssb network use: `npm start -- --appname=ssb` and it will display the main ssb network if you already have an `.ssb` folder.
 
 ### history
 
