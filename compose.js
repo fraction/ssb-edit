@@ -71,6 +71,13 @@ module.exports = function (opts) {
                 if(cb) cb(err, msg)
               })
             }
+          }),
+          h('button.btn', 'Cancel', {
+            onclick: function () {
+              composer.replaceChild(container, composer.firstChild)
+              container.appendChild(textarea)
+              container.appendChild(initialButtons)
+            }
           })
         )
         composer.replaceChild(preview, composer.firstChild)
