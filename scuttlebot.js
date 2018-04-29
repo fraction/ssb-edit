@@ -5,6 +5,8 @@ var reconnect = require('pull-reconnect')
 
 var config = require('./config')()
 var createClient = require('ssb-client')
+var createFeed   = require('ssb-feed')
+
 var keys = require('./keys')
 
 var CACHE = {}
@@ -31,6 +33,17 @@ var rec = reconnect(function (isConn) {
     notify()
   })
 })
+
+var internal = {
+  getLatest: rec.async(function (id, cb) {
+    sbot.getLatest(id, cb)
+  }),
+  add: rec.async(function (msg, cb) {
+    sbot.add(msg, cb)
+  })
+}
+
+var feed = createFeed(internal, keys, {remote: true})
 
 module.exports = {
   createLogStream: rec.source(function (opts) {

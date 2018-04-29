@@ -6,13 +6,18 @@ var stream = require('hyperloadmore/stream')
 var h = require('hyperscript')
 var render = require('./render')
 
-module.exports.logstream = function () {
-  var content = h('div.content')
+var compose = require('./compose')
 
+var content = h('div.content')
+function screen () {
   document.body.appendChild(h('div.screen',
     {style: {position: 'absolute', top: '0px', bottom: '0px', left: '0px', right: '0px'}},
     hyperscroll(content)
   ))
+}
+
+module.exports.logstream = function () {
+  screen()
 
   function createStream (opts) {
     return pull(
@@ -37,12 +42,7 @@ module.exports.logstream = function () {
 var rawJSON = require('patchapp-raw/json')
 
 module.exports.rawstream = function () {
-  var content = h('div.content')
-
-  document.body.appendChild(h('div.screen',
-    {style: {position: 'absolute', top: '0px', bottom: '0px', left: '0px', right: '0px'}},
-    hyperscroll(content)
-  ))
+  screen()
 
   function createStream (opts) {
     return pull(
@@ -68,12 +68,7 @@ module.exports.rawstream = function () {
 }
 
 module.exports.userstream = function (src) {
-  var content = h('div.content')
-
-  document.body.appendChild(h('div.screen',
-    {style: {position: 'absolute', top: '0px', bottom: '0px', left: '0px', right: '0px'}},
-    hyperscroll(content)
-  ))
+  screen()
 
   function createStream (opts) {
     return pull(
@@ -97,12 +92,7 @@ module.exports.userstream = function (src) {
 }
 
 module.exports.get = function (src) {
-  var content = h('div.content')
-
-  document.body.appendChild(h('div.screen',
-    {style: {position: 'absolute', top: '0px', bottom: '0px', left: '0px', right: '0px'}},
-    hyperscroll(content)
-  ))
+  screen()
 
   sbot.get(src, function (err, data) {
     if (err) {console.log('could not find message') } 
@@ -127,3 +117,9 @@ module.exports.get = function (src) {
     })
   })
 } 
+
+module.exports.compose = function () {
+  screen()
+
+  content.appendChild(h('div.message', compose))
+}

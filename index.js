@@ -18,6 +18,8 @@ if (src == 'raw') {
   views.userstream(src)
 } else if (ref.isMsg(src)) { 
   views.get(src)
+} else if (src == 'compose') {
+  views.compose()
 } else {
   views.logstream()
 }

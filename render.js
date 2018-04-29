@@ -8,13 +8,16 @@ var composer = require('./compose')
 var tools = require('./rendertools')
 
 module.exports = function (msg) {
-
+  var opts = {}
+  opts.root = null
   var message = h('div.message')
   if (msg.value.content.type == 'post') {
     message.appendChild(tools.header(msg))
+    opts.type = 'post'
     if (msg.value.content.root) {
       message.appendChild(h('span', 're: ', tools.messageLink(msg.value.content.root)))
-    }
+      opts.root = msg.value.content.root
+    } else { opts.root = msg.key}
     message.appendChild(h('div.message__body', 
         {innerHTML: markdown.block(msg.value.content.text, {toUrl: function (url, image) {
           if(url[0] == '%' || url[0] == '@') return '#' + url
@@ -26,7 +29,7 @@ module.exports = function (msg) {
     )
     message.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
-        var compose = composer()
+        var compose = composer(opts)
         message.replaceChild(compose, message.lastElementChild)
       }
     }))

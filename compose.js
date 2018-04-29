@@ -2,6 +2,9 @@ var h = require('hyperscript')
 var pull = require('pull-stream')
 var sbot = require('./scuttlebot')
 
+var header = require('./rendertools').header
+var id = require('./keys').id
+
 var mime = require('simple-mime')('application/octect-stream')
 var split = require('split-buffer')
 
@@ -34,12 +37,45 @@ function file_input (onAdded) {
 module.exports = function (opts) {
   var files = []
   var filesById = {}
+
+  var composer = h('div.composer')
+
+  var container = h('div.container')
   
-  var textarea = h('textarea.compose', {placeholder: 'Reply to this post'})
-  
-  var composer = h('div',
-    textarea,
-    h('button.btn', 'Preview'),
+  var textarea = h('textarea.compose', {placeholder: 'Write a message' || opts.placeholder})
+
+  var initialButtons = h('span', 
+    h('button.btn', 'Preview', {
+      onclick: function () {
+      
+        var msg = {}
+        msg.value = {
+          "author": id,
+          "content": {
+            "type": opts.type,
+            "root": opts.root
+          }
+        }
+        msg.value.content.text = textarea.value
+        console.log(msg)
+
+        var preview = h('div', 
+          header(msg), 
+          h('div.message__content', msg.value.content.text),
+          h('button.btn', 'Publish', {
+            onclick: function () {
+              sbot.publish(msg.value.content, function (err, msg) {
+                if(err) throw err
+                console.log('Published!', msg)
+                window.location.reload()
+                if(cb) cb(err, msg)
+              })
+            }
+          })
+        )
+        composer.replaceChild(preview, composer.firstChild)
+      }
+    }),
     file_input(function (file) {
       files.push(file)
       filesById[file.link] = file
@@ -47,6 +83,11 @@ module.exports = function (opts) {
       textarea.value += embed + '['+file.name+']('+file.link+')'
     })
   )
+
+  composer.appendChild(container)
+  container.appendChild(textarea)
+  container.appendChild(initialButtons)
+
   return composer
 } 
 

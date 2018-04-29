@@ -3,7 +3,6 @@ var human = require('human-time')
 var avatar = require('./avatar')
 var ref = require('ssb-ref')
 
-
 module.exports.header = function (msg) {
   return h('div.header',
     h('span.avatar',
