@@ -1,11 +1,10 @@
 var h = require('hyperscript')
-var markdown = require('ssb-markdown')
 var config = require('./config')()
 
 var sbot = require('./scuttlebot')
 var composer = require('./compose')
 
-var tools = require('./rendertools')
+var tools = require('./tools')
 
 module.exports = function (msg) {
   var opts = {}
@@ -14,18 +13,13 @@ module.exports = function (msg) {
   if (msg.value.content.type == 'post') {
     message.appendChild(tools.header(msg))
     opts.type = 'post'
+    opts.branch = msg.key
     if (msg.value.content.root) {
       message.appendChild(h('span', 're: ', tools.messageLink(msg.value.content.root)))
       opts.root = msg.value.content.root
     } else { opts.root = msg.key}
-    message.appendChild(h('div.message__body', 
-        {innerHTML: markdown.block(msg.value.content.text, {toUrl: function (url, image) {
-          if(url[0] == '%' || url[0] == '@') return '#' + url
-          if(!image) return url
-          if(url[0] !== '&') return url
-          return config.blobsUrl + url
-        }})}
-      )
+    message.appendChild(
+      h('div.message__body', tools.markdown(msg.value.content.text))
     )
     message.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
@@ -46,22 +40,19 @@ module.exports = function (msg) {
       if (msg.value.content.text) {
         message.appendChild(embedded)
         embedded.appendChild(tools.header(msg))
-        embedded.appendChild(h('div.message__body',
-          {innerHTML: markdown.block(msg.value.content.text.substring(0, 256) + '... ', {toUrl: function (url, image) {
-            if(url[0] == '@') return '#' + url
-            if(url[0] == '%') return '#' + url
-            if(!image) return url
-            if(url[0] !== '&') return url
-            return config.blobsUrl + url
-          }})}, tools.messageLink(msg.key)
-        ))
+        embedded.appendChild(
+          h('div.message__body', 
+            tools.markdown(msg.value.content.text.substring(0, 256) + '...'),
+            h('span', '[', h('a', {href: '#' + msg.key}, 'Full Post'), ']')
+          )
+        )
       }
     })
     return message
   } else {
-    //message.appendChild(tools.header(msg)) 
-    //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
-    //return message
-    return
+    message.appendChild(tools.header(msg)) 
+    message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
+    return message
+    //return
   }
 }

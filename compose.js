@@ -2,8 +2,9 @@ var h = require('hyperscript')
 var pull = require('pull-stream')
 var sbot = require('./scuttlebot')
 
-var header = require('./rendertools').header
 var id = require('./keys').id
+
+var tools = require('./tools')
 
 var mime = require('simple-mime')('application/octect-stream')
 var split = require('split-buffer')
@@ -53,15 +54,16 @@ module.exports = function (opts) {
           "author": id,
           "content": {
             "type": opts.type,
-            "root": opts.root
+            "root": opts.root,
+            "branch": opts.branch
           }
         }
         msg.value.content.text = textarea.value
         console.log(msg)
 
         var preview = h('div', 
-          header(msg), 
-          h('div.message__content', msg.value.content.text),
+          tools.header(msg), 
+          h('div.message__content', tools.markdown(msg.value.content.text)),
           h('button.btn', 'Publish', {
             onclick: function () {
               sbot.publish(msg.value.content, function (err, msg) {
