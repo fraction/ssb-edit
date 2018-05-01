@@ -1,5 +1,7 @@
 # mvd
 
+![mvd](mvd.png)
+
 This is a minimum viable full-stack Decent server and client. 
 
 Or you can call it model/view/decent
