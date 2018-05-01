@@ -11,17 +11,18 @@ var config = require('./config')()
 
 function votes (msg) {
   var votes = h('div.votes')
-
-  pull(
-    sbot.backlinks({query: [{$filter: {dest: msg.key, value: { content: { type: 'vote' }}}}], live: true}),
-    pull.drain(function (data) {
-      console.log(data)
-      if (data.value) {
-        votes.appendChild(h('a', {href:'#' + data.key}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
+  if (msg.key) {
+    pull(
+      sbot.backlinks({query: [{$filter: {dest: msg.key, value: { content: { type: 'vote' }}}}], live: true}),
+      pull.drain(function (data) {
         console.log(data)
-      } else {console.log(data)}
-    })
-  )
+        if (data.value) {
+          votes.appendChild(h('a', {href:'#' + data.key}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
+          console.log(data)
+        } else {console.log(data)}
+      })
+    )
+  }
   return votes
 }
 
