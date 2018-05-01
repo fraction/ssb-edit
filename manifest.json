@@ -63,6 +63,10 @@
     "read": "source",
     "dump": "source"
   },
+  "backlinks": {
+    "read": "source",
+    "dump": "source"
+  },
   "query": {
     "read": "source",
     "dump": "source"

@@ -65,6 +65,9 @@ module.exports = {
   query: rec.source(function (query) {
     return sbot.query.read(query)
   }),
+  backlinks: rec.source(function (query) {
+    return sbot.backlinks.read(query)
+  }),
   get: rec.async(function (key, cb) {
     if('function' !== typeof cb)
       throw new Error('cb must be function')

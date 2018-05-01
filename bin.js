@@ -33,6 +33,7 @@ if (argv[0] == 'server') {
     .use(require('ssb-friends'))
     .use(require('ssb-blobs'))
     .use(require('ssb-query'))
+    .use(require('ssb-backlinks'))
     .use(require('ssb-links'))
     .use(require('ssb-ebt'))
     .use(require('ssb-ooo'))

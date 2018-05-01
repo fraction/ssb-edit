@@ -35,7 +35,7 @@ a {
   max-width: 100%;
 }
 
-.timestamp {
+.timestamp, .votes {
   float: right;
 }
 
@@ -56,7 +56,7 @@ a {
 
 .emoji {
   float: left;
-  width: 1.4em;
+  width: 1em;
   vertical-align: top;
 }
 

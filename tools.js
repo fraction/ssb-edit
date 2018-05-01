@@ -3,6 +3,28 @@ var human = require('human-time')
 var avatar = require('./avatar')
 var ref = require('ssb-ref')
 
+var pull = require('pull-stream')
+
+var sbot = require('./scuttlebot')
+
+var config = require('./config')()
+
+function votes (msg) {
+  var votes = h('div.votes')
+
+  pull(
+    sbot.backlinks({query: [{$filter: {dest: msg.key, value: { content: { type: 'vote' }}}}], live: true}),
+    pull.drain(function (data) {
+      console.log(data)
+      if (data.value) {
+        votes.appendChild(h('a', {href:'#' + data.key}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
+        console.log(data)
+      } else {console.log(data)}
+    })
+  )
+  return votes
+}
+
 module.exports.header = function (msg) {
   return h('div.header',
     h('span.avatar',
@@ -12,6 +34,7 @@ module.exports.header = function (msg) {
       )
     ),
     h('span.timestamp', h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp)))),
+    votes(msg)
   )
 }
 
