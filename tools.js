@@ -13,12 +13,10 @@ function votes (msg) {
   var votes = h('div.votes')
   if (msg.key) {
     pull(
-      sbot.backlinks({query: [{$filter: {dest: msg.key, value: { content: { type: 'vote' }}}}], live: true}),
+      sbot.links({dest: msg.key, rel: 'vote'}),
       pull.drain(function (data) {
-        console.log(data)
-        if (data.value) {
+        if (data) {
           votes.appendChild(h('a', {href:'#' + data.key}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
-          console.log(data)
         } else {console.log(data)}
       })
     )

@@ -42,8 +42,10 @@ module.exports = function (opts) {
   var composer = h('div.composer')
 
   var container = h('div.container')
-  
-  var textarea = h('textarea.compose', {placeholder: 'Write a message' || opts.placeholder})
+  if (opts.messageText)
+    var textarea = h('textarea.compose', opts.messageText)
+  else
+    var textarea = h('textarea.compose', {placeholder: 'Write a message' || opts.placeholder})
 
   var initialButtons = h('span', 
     h('button.btn', 'Preview', {
@@ -54,10 +56,14 @@ module.exports = function (opts) {
           "author": id,
           "content": {
             "type": opts.type,
-            "root": opts.root,
-            "branch": opts.branch
+            "root": opts.root
           }
         }
+        if (opts.original)
+          msg.value.content.original = opts.original
+        if (opts.updated)
+          msg.value.content.updated = opts.updated
+
         msg.value.content.text = textarea.value
         console.log(msg)
 
