@@ -3,6 +3,8 @@ var config = require('./config')()
 
 var pull = require('pull-stream')
 
+var human = require('human-time')
+
 var sbot = require('./scuttlebot')
 var composer = require('./compose')
 
@@ -24,9 +26,7 @@ module.exports = function (msg) {
 
     if (msg.value.content.root) {
       message.appendChild(h('span', 're: ', tools.messageLink(msg.value.content.root)))
-      opts.root = msg.value.content.root
-    } else { opts.root = msg.key }
-
+    }
 
     message.appendChild(
       h('div.message__body', tools.markdown(msg.value.content.text))
@@ -39,8 +39,14 @@ module.exports = function (msg) {
       pull(
         sbot.query({query: [{$filter: {value: {content: {type: 'update', updated: msg.key}}}}]}),
         pull.drain(function (update) {
-          var latest = h('div.message__body', tools.markdown(update.value.content.text))
-          message.replaceChild(latest, message.childNodes[2])
+          var latest = h('div.message__body', 
+            tools.markdown(update.value.content.text),
+            h('span.timestamp', 'Edited: ', h('a', {href: '#' + update.key}, human(new Date(update.value.timestamp))))
+          )
+          var num = message.childNodes.length
+          var act = num - 2
+          console.log(act)
+          message.replaceChild(latest, message.childNodes[act])
           opts.messageText = update.value.content.text
         })
     
@@ -61,12 +67,21 @@ module.exports = function (msg) {
       opts.type = 'post'
       opts.branch = msg.key
 
+      if (msg.value.content.root) {
+        message.appendChild(h('span', 're: ', tools.messageLink(msg.value.content.root)))
+        opts.root = msg.value.content.root
+      } else { opts.root = msg.key }
+  
+  
       pull(
         sbot.query({query: [{$filter: {value: {content: {type: 'update', updated: msg.key}}}}]}),
         pull.drain(function (data) {
           console.log(data)
-          var latest = h('div.message__body', tools.markdown(data.value.content.text))
-          message.replaceChild(latest, message.childNodes[2])
+          var latest = h('div.message__body', tools.markdown(data.value.content.text), h('span.timestamp', 'Edited: ' + human(new Date(data.value.timestamp))))
+          var num = message.childNodes.length
+          var act = num - 2
+
+          message.replaceChild(latest, message.childNodes[act])
         })
 
       )
@@ -102,9 +117,9 @@ module.exports = function (msg) {
     })
     return message
   } else {
-    message.appendChild(tools.header(msg)) 
-    message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
-    return message
-    //return
+    //message.appendChild(tools.header(msg)) 
+    //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
+    //return message
+    return
   }
 }
