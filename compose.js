@@ -45,7 +45,7 @@ module.exports = function (opts) {
   if (opts.messageText)
     var textarea = h('textarea.compose', opts.messageText)
   else
-    var textarea = h('textarea.compose', {placeholder: 'Write a message' || opts.placeholder})
+    var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message'})
 
   var initialButtons = h('span', 
     h('button.btn', 'Preview', {

@@ -17,7 +17,23 @@ function screen () {
 }
 
 module.exports.logstream = function () {
-  screen()
+  var opts = {
+    "type": 'post', 
+    "placeholder": 'Write a mutable message'
+  }
+
+  var content = h('div.content',
+    h('div.message', compose(opts))
+  )
+
+  function mainscreen () {
+    document.body.appendChild(h('div.screen',
+      {style: {position: 'absolute', top: '0px', bottom: '0px', left: '0px', right: '0px'}},
+      hyperscroll(content)
+    ))
+  }
+
+  mainscreen()
 
   function createStream (opts) {
     return pull(
