@@ -68,7 +68,6 @@ module.exports = function (msg) {
       opts.branch = msg.key
 
       if (msg.value.content.root) {
-        message.appendChild(h('span', 're: ', tools.messageLink(msg.value.content.root)))
         opts.root = msg.value.content.root
       } else { opts.root = msg.key }
   
