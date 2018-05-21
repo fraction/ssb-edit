@@ -1,26 +1,35 @@
 var h = require('hyperscript')
-var config = require('./config')()
-
 var pull = require('pull-stream')
-
 var human = require('human-time')
 
 var sbot = require('./scuttlebot')
 var composer = require('./compose')
-
 var tools = require('./tools')
 
+var config = require('./config')()
 var id = require('./keys').id
 
 module.exports = function (msg) {
-  var opts = {}
-  opts.root = null
+  var edit = {}
+  var reply = {}
+
   var message = h('div.message')
 
-
   if (msg.value.content.type == 'post') {
-    opts.type = 'post'
-    opts.branch = msg.key
+
+    reply.type = 'post'
+    reply.branch = msg.key
+
+    if (msg.value.content.root) 
+      reply.root = msg.value.content.root
+    else  
+      reply.root = msg.key 
+ 
+    if (msg.value.author == id)
+      edit.original = msg.key
+      edit.type = 'update'
+      edit.updated = msg.key
+      edit.messageText = msg.value.content.text 
 
     message.appendChild(tools.header(msg))
 
@@ -32,68 +41,39 @@ module.exports = function (msg) {
       h('div.message__body', tools.markdown(msg.value.content.text))
     )
 
-    if (msg.value.author == id) {
-      opts.type = 'update'
-      opts.updated = msg.key
-      opts.messageText = msg.value.content.text
-      pull(
-        sbot.query({query: [{$filter: {value: {content: {type: 'update', updated: msg.key}}}}]}),
-        pull.drain(function (update) {
-          var latest = h('div.message__body', 
-            tools.markdown(update.value.content.text),
-            h('span.timestamp', 'Edited: ', h('a', {href: '#' + update.key}, human(new Date(update.value.timestamp))))
-          )
-          var num = message.childNodes.length
+    pull(
+      sbot.query({query: [{$filter: {value: {content: {type: 'update', updated: msg.key}}}}]}),
+      pull.drain(function (update) {
+        var latest = h('div.message__body', 
+          tools.markdown(update.value.content.text),
+          h('span.timestamp', 'Edited: ', h('a', {href: '#' + update.key}, human(new Date(update.value.timestamp))))
+        )
+        var num = message.childNodes.length
+        if (msg.value.author == id)
+          var act = num - 3
+        else 
           var act = num - 2
-          console.log(act)
-          message.replaceChild(latest, message.childNodes[act])
-          opts.messageText = update.value.content.text
-        })
-    
-      )
+        message.replaceChild(latest, message.childNodes[act])
+        edit.messageText = update.value.content.text
+        edit.original = msg.value.content.original
+      })
+    )
 
-
-      if (msg.value.content.original)
-        opts.original = msg.value.content.original
-      else 
-        opts.original = msg.key
+    message.appendChild(h('button.btn', 'Reply', {
+      onclick: function () {
+        var compose = composer(reply)
+        message.replaceChild(compose, message.lastElementChild)
+      }
+    }))
+    if (msg.value.author == id)
       message.appendChild(h('button.btn', 'Edit', {
         onclick: function () {
-          var compose = h('div.message', composer(opts))
+          var compose = h('div.message', composer(edit))
           message.parentNode.replaceChild(compose, message)
         }
       }))
-    } else {
-      opts.type = 'post'
-      opts.branch = msg.key
-
-      if (msg.value.content.root) {
-        opts.root = msg.value.content.root
-      } else { opts.root = msg.key }
-  
-  
-      pull(
-        sbot.query({query: [{$filter: {value: {content: {type: 'update', updated: msg.key}}}}]}),
-        pull.drain(function (data) {
-          console.log(data)
-          var latest = h('div.message__body', tools.markdown(data.value.content.text), h('span.timestamp', 'Edited: ' + human(new Date(data.value.timestamp))))
-          var num = message.childNodes.length
-          var act = num - 2
-
-          message.replaceChild(latest, message.childNodes[act])
-        })
-
-      )
-
- 
-      message.appendChild(h('button.btn', 'Reply', {
-        onclick: function () {
-          var compose = composer(opts)
-          message.replaceChild(compose, message.lastElementChild)
-        }
-      }))
-    } 
     return message
+
   } else if (msg.value.content.type == 'vote') {
     message.appendChild(tools.header(msg))
     var embed = msg.value.content.vote.link
