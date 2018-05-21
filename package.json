@@ -4,8 +4,10 @@
   "description": "minimum viable decent",
   "main": "index.js",
   "scripts": {
-    "decent": "node bin server ",
+    "start": "node bin server",
+    "decent": "node bin server --appname=decent",
     "ssb": "node bin server --appname=ssb",
+    "testnet": "node bin server --appname=testnet",
     "build": "node style.js && mkdir -p build && browserify index.js | indexhtmlify > build/index.html"
   },
   "devDependencies": {
