@@ -1,8 +1,10 @@
 body {
+  margin: 0;
   background: black;
   font-family: sans-serif;
-  color: #ddd;
-  font-size: 1em;
+  color: #d5d5d5;
+  font-size: 14px; 
+  line-height: 20px;
 }
 
 .hyperscroll {
@@ -10,7 +12,12 @@ body {
 }
 
 a {
-  color: #f5f5f5;
+  color: white;
+  *text-decoration: none;
+}
+
+a:hover {
+  color: #ddd;
 }
 
 .hyperscroll > .content {
@@ -38,7 +45,7 @@ a {
 .timestamp, .votes {
   float: right;
 }
-
+ 
 .avatar--small img {
   vertical-align: top;
   width: 1.4em;
@@ -84,9 +91,9 @@ white-space: pre\9;
 .btn {
   display: inline-block;
   *display: inline;
-  padding: 3px 6px;
+  padding: 2px 6px;
   margin-bottom: 0;
-  *margin-left: .3em;
+  margin-right: .2em;
   font-size: 14px;
   line-height: 20px;
   color: #333333;
@@ -126,8 +133,8 @@ white-space: pre\9;
 .btn.disabled,
 .btn[disabled] {
   color: #333333;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
+  *background-color: #e6e6e6;
+  background-color: #d9d9d9;
 }
 
 .btn:active,

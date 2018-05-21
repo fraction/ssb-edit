@@ -40,8 +40,8 @@ module.exports = function (opts) {
   var filesById = {}
 
   var composer = h('div.composer')
-
   var container = h('div.container')
+
   if (opts.messageText)
     var textarea = h('textarea.compose', opts.messageText)
   else
