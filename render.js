@@ -76,6 +76,7 @@ module.exports = function (msg) {
 
   } else if (msg.value.content.type == 'vote') {
     message.appendChild(tools.header(msg))
+    message.appendChild(h('span', 'Starred:'))
     var embed = msg.value.content.vote.link
 
     var embedded = h('div.embedded')
