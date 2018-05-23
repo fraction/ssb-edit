@@ -15,7 +15,7 @@ var config = require('./config/inject')(yargs.appname || 'decent')
 
 config.keys = ssbKeys.loadOrCreateSync(path.join(config.path, 'secret'))
 
-var coraClient = fs.readFileSync(path.join('./build/index.html'))
+var mvdClient = fs.readFileSync(path.join('./build/index.html'))
 
 var manifestFile = path.join(config.path, 'manifest.json')
 
@@ -38,18 +38,17 @@ if (argv[0] == 'server') {
     .use(require('ssb-ooo'))
     .use(require('scuttlebot/plugins/invite'))
     .use(require('scuttlebot/plugins/local'))
-    .use(require('decent-ssb/plugins/ws'))
+    .use(require('decent-ws'))
     .use({
       name: 'serve',
       version: '1.0.0',
       init: function (sbot) {
         sbot.ws.use(function (req, res, next) {
-          var send = {} 
-          send = config
+          var send = config
           delete send.keys // very important to keep this, as it removes the server keys from the config before broadcast
           send.address = sbot.ws.getAddress()
           if(req.url == '/')
-            res.end(coraClient)
+            res.end(mvdClient)
           if(req.url == '/get-config')
             res.end(JSON.stringify(send))
           else next()
