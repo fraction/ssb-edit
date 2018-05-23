@@ -17,7 +17,7 @@
   "author": "Ev Bogue <ev@evbogue.com>",
   "license": "MIT",
   "dependencies": {
-    "decent-ssb": "^4.4.1",
+    "decent-ws": "^1.0.0",
     "deep-extend": "^0.5.1",
     "human-time": "0.0.1",
     "hyperloadmore": "^1.1.0",

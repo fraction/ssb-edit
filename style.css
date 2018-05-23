@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background: black;
+  background: #111;
   font-family: sans-serif;
   color: #d5d5d5;
   font-size: 14px; 
@@ -20,22 +20,79 @@ a:hover {
   color: #ddd;
 }
 
+.navbar a {
+  color: #999;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+}
+
+.navbar a:hover, .navbar a:focus {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar {
+  background: #1b1b1b;
+  background: linear-gradient(#222, #111);
+  border-bottom: 1px solid #252525;
+}
+
+.navbar {
+  width: 100%;
+  position: fixed;
+  z-index: 1000;
+  margin: 0;
+  padding-top: .3em;
+  padding-bottom: .3em;
+  left: 0; right: 0;
+  top: 0;
+}
+
+.navbar .internal {
+  max-width: 645px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.navbar li {
+  margin-top: .3em;
+  float: left;
+  padding-right: .6em;
+  padding-left: .3em;
+  list-style-type: none;
+}
+
+
 .hyperscroll > .content {
   max-width: 680px;
   margin-left: auto;
   margin-right: auto;
 }
 
+.message, .message > *, .navbar, .navbar > * {
+  animation: fadein .5s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
 .message, .embedded {
   display: block;
   margin: .6em;
   background: #111;
-  padding: .5em;
+  padding: .7em;
+  border-radius: 3px;
+  border: 1px solid #252525;
 }
 
 .embedded {
-  border-left: 1px solid #666;
   padding-left: 1em;
+}
+
+.message:hover, .embedded:hover {
+  background: #222;
 }
 
 .message img {
