@@ -16,7 +16,6 @@ module.exports = function (msg) {
   var message = h('div.message')
 
   if (msg.value.content.type == 'post') {
-
     reply.type = 'post'
     reply.branch = msg.key
 
@@ -57,9 +56,10 @@ module.exports = function (msg) {
       })
     )
     var buttons = h('div.buttons')
-
     buttons.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
+        //fallback = message.lastElementChild
+        //console.log(fallback)
         var compose = composer(reply)
         message.replaceChild(compose, message.lastElementChild)
       }
