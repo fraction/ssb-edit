@@ -3,126 +3,11 @@ var pull = require('pull-stream')
 var human = require('human-time')
 
 var sbot = require('./scuttlebot')
+var composer = require('./compose')
 var tools = require('./tools')
 
 var config = require('./config')()
 var id = require('./keys').id
-
-var mime = require('simple-mime')('application/octect-stream')
-var split = require('split-buffer')
-
-function file_input (onAdded) {
-  return h('label.btn', 'Upload file',
-    h('input', { type: 'file', hidden: true,
-    onchange: function (ev) {
-      var file = ev.target.files[0]
-      if (!file) return
-      var reader = new FileReader()
-      reader.onload = function () {
-        pull(
-          pull.values(split(new Buffer(reader.result), 64*1024)),
-          sbot.addblob(function (err, blob) {
-            if(err) return console.error(err)
-            onAdded({
-              link: blob,
-              name: file.name,
-              size: reader.result.length || reader.result.byteLength,
-              type: mime(file.name)
-            })
-          })
-        )
-      }
-      reader.readAsArrayBuffer(file)
-    }
-  }))
-}
-
-function composeButtons (msg, opts) {
-  var files = []
-  var filesById = {}
-
-  var buttons = h('div.controls')
-
-  var previewBtn = h('button.btn', 'Preview', {
-    onclick: function () {
-      var draft = {}
-      draft.value = {
-        "author": id,
-        "content": {
-          "type": opts.type,
-          "root": opts.root
-        }
-      }
-    
-      if (opts.original)
-        msg.value.content.original = opts.original
-      if (opts.updated)
-        msg.value.content.updated = opts.updated
-    
-      draft.value.content.text = textarea.value
-      console.log(draft)
-    }
-  })
-
-  /*var cancelBtn = h('button.btn', 'Cancel' {
-    onclick: function () {
-      
-    }
-  })*/
-
-  buttons.appendChild(previewBtn)
-
-  buttons.appendChild(
-    file_input(function (file) {
-      files.push(file)
-      filesById[file.link] = file
-      var embed = file.type.indexOf('image/') === 0 ? '!' : ''
-      textarea.value += embed + '['+file.name+']('+file.link+')'
-    })
-  )
-  return buttons 
-  //buttons.appendChild(cancelBtn)
-}
-
-
-function defaultButtons (msg, reply, edit) {
-
-  var buttons = h('div.controls')
-
-  var replyBtn = h('button.btn', 'Reply', {
-    onclick: function () {
-      var textarea = h('textarea.compose', {placeholder: 'Reply to this message'})
-      var reply = h('div.reply',
-        textarea,
-        composeButtons(msg, reply) 
-      )
-
-      buttons.parentNode.replaceChild(reply, buttons)
-    }
-  })
-
-  var editBtn = h('button.btn', 'Edit', {
-    onclick: function () {
-      var textarea = h('textarea.compose', edit.messageText)
-      var editor = h('div.edit',
-        textarea,
-        composeButtons(msg, edit)
-      )
-
-      var prevMessage = buttons.parentNode.childNodes[2]
-      buttons.parentNode.replaceChild(editor, prevMessage)
-      buttons.parentNode.removeChild(buttons)
-    }
-  })
-  
-  buttons.appendChild(replyBtn)
-
-  if (msg.value.author == id)
-    buttons.appendChild(editBtn)
-
-  return buttons
-}
-
 
 module.exports = function (msg) {
   var edit = {}
@@ -131,6 +16,7 @@ module.exports = function (msg) {
   var message = h('div.message')
 
   if (msg.value.content.type == 'post') {
+
     reply.type = 'post'
     reply.branch = msg.key
 
@@ -162,17 +48,30 @@ module.exports = function (msg) {
           tools.markdown(update.value.content.text),
           h('span.timestamp', 'Edited: ', h('a', {href: '#' + update.key}, human(new Date(update.value.timestamp))))
         )
-        var num = message.childNodes.length
-        if (msg.value.author == id)
-          var act = num - 2
-        else 
-          var act = num - 2
-        message.replaceChild(latest, message.childNodes[act])
+        message.replaceChild(latest, message.childNodes.length)
         edit.messageText = update.value.content.text
         edit.original = msg.value.content.original
       })
     )
-    message.appendChild(defaultButtons(msg, reply, edit))
+    var buttons = h('div.buttons')
+
+    buttons.appendChild(h('button.btn', 'Reply', {
+      onclick: function () {
+        var compose = composer(reply)
+        message.replaceChild(compose, message.lastElementChild)
+      }
+    }))
+    if (msg.value.author == id)
+      buttons.appendChild(h('button.btn', 'Edit', {
+        onclick: function () {
+          var compose = composer(edit)
+          var r = message.childNodes.length - 1
+          message.removeChild(message.childNodes[r])
+          message.replaceChild(compose, message.lastElementChild)
+        }
+      }))
+
+    message.appendChild(buttons)
     return message
 
   } else if (msg.value.content.type == 'vote') {
