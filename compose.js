@@ -1,7 +1,7 @@
 var h = require('hyperscript')
 var pull = require('pull-stream')
 var sbot = require('./scuttlebot')
-
+var human = require('human-time')
 var id = require('./keys').id
 
 var tools = require('./tools')
@@ -60,7 +60,7 @@ module.exports = function (opts) {
         }
 
         if (opts.root)
-          msg.valeu.content.root = opts.root
+          msg.value.content.root = opts.root
         if (opts.original)
           msg.value.content.original = opts.original
         if (opts.updated)
@@ -69,8 +69,13 @@ module.exports = function (opts) {
         msg.value.content.text = textarea.value
         console.log(msg)
 
-        var preview = h('div', 
-          tools.header(msg), 
+        if (opts.type == 'post') 
+          var header = tools.header(msg)
+        if (opts.type == 'update')
+          var header = h('div.timestamp', 'Edited:', h('a', {href: msg.key}, human(new Date(msg.value.timestamp))))
+
+        var preview = h('div',
+          header,
           h('div.message__content', tools.markdown(msg.value.content.text)),
           h('button.btn', 'Publish', {
             onclick: function () {

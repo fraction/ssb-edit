@@ -44,11 +44,14 @@ module.exports = function (msg) {
     pull(
       sbot.query({query: [{$filter: {value: {content: {type: 'update', updated: msg.key}}}}]}),
       pull.drain(function (update) {
+        var newTimestamp = h('span.timestamp', 'Edited: ', h('a', {href: '#' + update.key}, human(new Date(update.value.timestamp))))
+        var newMessage = h('div', tools.markdown(update.value.content.text))
         var latest = h('div.message__body', 
-          tools.markdown(update.value.content.text),
-          h('span.timestamp', 'Edited: ', h('a', {href: '#' + update.key}, human(new Date(update.value.timestamp))))
+          newTimestamp,
+          newMessage
         )
-        message.replaceChild(latest, message.childNodes.length)
+        var r = message.childNodes.length - 2
+        message.replaceChild(latest, message.childNodes[r])
         edit.messageText = update.value.content.text
         edit.original = msg.value.content.original
       })
