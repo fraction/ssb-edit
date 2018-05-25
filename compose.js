@@ -53,16 +53,16 @@ module.exports = function (opts, buttons) {
     var cancelBtn = h('button.btn', 'Cancel', {
       onclick: function () {
         var cancel
-        if (opts.updated) {
+        if (opts.type == 'updated') {
           cancel = document.getElementById(opts.updated.substring(0,10))
           var oldMessage = h('div.message__body', tools.markdown(opts.messageText))
           cancel.parentNode.replaceChild(oldMessage, cancel)
           oldMessage.parentNode.appendChild(buttons)
-        } else if (opts.branch) {
-          cancel = document.getElementById(opts.branch.substring(0,10))
-          cancel.parentNode.removeChild(cancel)
         } else {
-          cancel = document.getElementById('composer')
+          if (document.getElementById(opts.branch.substring(0,10)))
+            cancel = document.getElementById(opts.branch.substring(0,10))
+          else
+            cancel = document.getElementById('composer')
           cancel.parentNode.removeChild(cancel)
         }
       }
@@ -75,61 +75,70 @@ module.exports = function (opts, buttons) {
   var initialButtons = h('span', 
     h('button.btn', 'Preview', {
       onclick: function () {
-      
-        var msg = {}
-        msg.value = {
-          "author": id,
-          "content": {
-            "type": opts.type
+        if (textarea.value) {
+          var msg = {}
+          msg.value = {
+            "author": id,
+            "content": {
+              "type": opts.type
+            }
           }
-        }
 
-        if (opts.root)
-          msg.value.content.root = opts.root
-        if (opts.original)
-          msg.value.content.original = opts.original
-        if (opts.updated)
-          msg.value.content.updated = opts.updated
+          if (opts.root)
+            msg.value.content.root = opts.root
+          if (opts.original)
+            msg.value.content.original = opts.original
+          if (opts.updated)
+            msg.value.content.updated = opts.updated
 
-        msg.value.content.text = textarea.value
-        console.log(msg)
+          msg.value.content.text = textarea.value
+          console.log(msg)
 
-        if (opts.type == 'post') 
-          var header = tools.header(msg)
-        if (opts.type == 'update')
-          var header = h('div.timestamp', 'Edited: ', h('a', {href: msg.key}, human(new Date(msg.value.timestamp))))
+          if (opts.type == 'post') 
+            var header = tools.header(msg)
+          if (opts.type == 'update')
+            var header = h('div.timestamp', 'Edited: ', h('a', {href: msg.key}, human(new Date(msg.value.timestamp))))
 
-        var preview = h('div',
-          header,
-          h('div.message__content', tools.markdown(msg.value.content.text)),
-          h('button.btn', 'Publish', {
-            onclick: function () {
-              sbot.publish(msg.value.content, function (err, msg) {
-                if(err) throw err
-                console.log('Published!', msg)
-                if (opts.type == 'update') {
-                  var originalMessage = document.getElementById(opts.updated.substring(0,10))
-                  console.log(originalMessage)
-                  opts.messageText = msg.value.content.text
-                  var newMessage = h('div.message__body', 
-                    h('div.timestamp', 'Edited: ', h('a', {href: msg.key}, human(new Date(msg.value.timestamp)))),
-                    h('div', tools.markdown(msg.value.content.text))
-                  )
-                  originalMessage.parentNode.replaceChild(newMessage, originalMessage)
-                  newMessage.parentNode.appendChild(buttons)
+          var preview = h('div',
+            header,
+            h('div.message__content', tools.markdown(msg.value.content.text)),
+            h('button.btn', 'Publish', {
+              onclick: function () {
+                if (msg.value.content) {
+                  sbot.publish(msg.value.content, function (err, msg) {
+                    if(err) throw err
+                    console.log('Published!', msg)
+                    if (opts.type == 'update') {
+                      var originalMessage = document.getElementById(opts.updated.substring(0,10))
+                      console.log(originalMessage)
+                      opts.messageText = msg.value.content.text
+                      var newMessage = h('div.message__body', 
+                        h('div.timestamp', 'Edited: ', h('a', {href: msg.key}, human(new Date(msg.value.timestamp)))),
+                        h('div', tools.markdown(msg.value.content.text))
+                      )
+                      originalMessage.parentNode.replaceChild(newMessage, originalMessage)
+                      newMessage.parentNode.appendChild(buttons)
+                    } else {
+                      if (opts.branch)
+                        cancel = document.getElementById(opts.branch.substring(0,10))
+                      else
+                        cancel = document.getElementById('composer')
+                      cancel.parentNode.removeChild(cancel)  
+                    }
+                  })
                 }
-              })
-            }
-          }),
-          h('button.btn', 'Cancel', {
-            onclick: function () {
-              composer.replaceChild(container, composer.firstChild)
-              container.appendChild(textarea)
-              container.appendChild(initialButtons)
-            }
-          })
-        )
-        composer.replaceChild(preview, composer.firstChild)
+              }
+            }),
+            h('button.btn', 'Cancel', {
+              onclick: function () {
+                composer.replaceChild(container, composer.firstChild)
+                container.appendChild(textarea)
+                container.appendChild(initialButtons)
+              }
+            })
+          )
+          composer.replaceChild(preview, composer.firstChild)
+        }
       }
     }),
     file_input(function (file) {
