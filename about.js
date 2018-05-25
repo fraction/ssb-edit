@@ -21,7 +21,7 @@ module.exports = function () {
       )
     ),
     h('p', h('strong', 'Use Decent'), ' on your local machine by cloning the repository and building the software. Or, use a public Decent Pub to try Decent over websockets.'), 
-    h('p', h('strong', 'Save your ', h('a', {href:'#key'} , 'key')), ' somewhere safe(!) to write to your append-only log. Decent will share your log with your friends (and their friends) using the gossip network. While you can edit messages by appending new messages to your log, any message you post will always exist on your secure log. Use your key on one Decent at a time to avoid forking your log. Use different keys on multiple devices.'),
+    h('p', h('strong', 'Save your ', h('a', {href:'#key'} , 'key')), ' somewhere safe(!) to write to your append-only log. Decent will share your log with your friends (and their friends) using the gossip network. While you can edit messages by appending new messages to your log, any message you post will always exist on your secure log. Only use your key on one Decent instance at a time to avoid forking your log.'),
     h('p', 'Decent Pubs:'),
     h('ul',
       h('li', h('a', {href: 'http://decent.evbogue.com/'}, 'decent.evbogue.com')),
