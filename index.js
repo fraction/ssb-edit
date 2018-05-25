@@ -2,6 +2,8 @@ var h = require('hyperscript')
 var route = require('./views')
 var avatar = require('./avatar')
 
+var compose = require('./compose')
+
 var id = require('./keys').id
 
 document.head.appendChild(h('style', require('./style.css.json')))
@@ -12,7 +14,15 @@ var nav = h('div.navbar',
   h('div.internal',
     h('li', h('a', {href: '#' + id}, h('span.avatar--small', avatar.image(id)))),
     h('li', h('a', {href: '#' + id}, avatar.name(id))),
-    h('li', h('a', {href: '#compose' }, 'Compose')),
+    h('li', h('a', 'Compose', {
+      onclick: function () {
+        document.getElementById('screen')
+        var opts = {}
+        opts.type = 'post'
+        var composer = h('div.content#composer', h('div.message', compose(opts)))
+        screen.firstChild.insertBefore(composer, screen.firstChild.firstChild)
+      }
+    })),
     h('li', h('a', {href: '#'}, 'Public')),
     h('li', h('a', {href: '#private' }, 'Private')),
     h('li', h('a', {href: '#mentions' }, 'Mentions')),

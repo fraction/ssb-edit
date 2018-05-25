@@ -58,9 +58,11 @@ module.exports = function (msg) {
     var buttons = h('div.buttons')
     buttons.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
+        var r = message.childNodes.length - 1
+        buttons = message.childNodes[r]
         //fallback = message.lastElementChild
         //console.log(fallback)
-        var compose = h('div.message#' + reply.branch.substring(0, 10), composer(reply))
+        var compose = h('div.message#' + reply.branch.substring(0, 10), composer(reply, buttons))
         message.parentNode.appendChild(compose)
         //message.replaceChild(compose, message.lastElementChild)
       }
@@ -69,9 +71,9 @@ module.exports = function (msg) {
       buttons.appendChild(h('button.btn', 'Edit', {
         onclick: function () {
           var r = message.childNodes.length - 1
-          edit.buttons = message.childNodes[r]
+          buttons = message.childNodes[r]
           message.removeChild(message.childNodes[r])
-          var compose = h('div#' + edit.updated.substring(0, 10), composer(edit))
+          var compose = h('div#' + edit.updated.substring(0, 10), composer(edit, buttons))
           message.replaceChild(compose, message.lastElementChild)
         }
       }))

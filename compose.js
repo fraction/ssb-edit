@@ -9,6 +9,8 @@ var tools = require('./tools')
 var mime = require('simple-mime')('application/octect-stream')
 var split = require('split-buffer')
 
+var route = require('./views')
+
 function file_input (onAdded) {
   return h('label.btn', 'Upload file',
     h('input', { type: 'file', hidden: true,
@@ -35,7 +37,7 @@ function file_input (onAdded) {
   }))
 }
 
-module.exports = function (opts) {
+module.exports = function (opts, buttons) {
   var files = []
   var filesById = {}
 
@@ -55,10 +57,12 @@ module.exports = function (opts) {
           cancel = document.getElementById(opts.updated.substring(0,10))
           var oldMessage = h('div.message__body', tools.markdown(opts.messageText))
           cancel.parentNode.replaceChild(oldMessage, cancel)
-          console.log(opts.buttons)
-          oldMessage.parentNode.appendChild(opts.buttons)
+          oldMessage.parentNode.appendChild(buttons)
         } else if (opts.branch) {
           cancel = document.getElementById(opts.branch.substring(0,10))
+          cancel.parentNode.removeChild(cancel)
+        } else {
+          cancel = document.getElementById('composer')
           cancel.parentNode.removeChild(cancel)
         }
       }
@@ -93,7 +97,7 @@ module.exports = function (opts) {
         if (opts.type == 'post') 
           var header = tools.header(msg)
         if (opts.type == 'update')
-          var header = h('div.timestamp', 'Edited:', h('a', {href: msg.key}, human(new Date(msg.value.timestamp))))
+          var header = h('div.timestamp', 'Edited: ', h('a', {href: msg.key}, human(new Date(msg.value.timestamp))))
 
         var preview = h('div',
           header,
@@ -103,8 +107,17 @@ module.exports = function (opts) {
               sbot.publish(msg.value.content, function (err, msg) {
                 if(err) throw err
                 console.log('Published!', msg)
-                window.location.reload()
-                if(cb) cb(err, msg)
+                if (opts.type == 'update') {
+                  var originalMessage = document.getElementById(opts.updated.substring(0,10))
+                  console.log(originalMessage)
+                  opts.messageText = msg.value.content.text
+                  var newMessage = h('div.message__body', 
+                    h('div.timestamp', 'Edited: ', h('a', {href: msg.key}, human(new Date(msg.value.timestamp)))),
+                    h('div', tools.markdown(msg.value.content.text))
+                  )
+                  originalMessage.parentNode.replaceChild(newMessage, originalMessage)
+                  newMessage.parentNode.appendChild(buttons)
+                }
               })
             }
           }),
