@@ -60,8 +60,9 @@ module.exports = function (msg) {
       onclick: function () {
         //fallback = message.lastElementChild
         //console.log(fallback)
-        var compose = composer(reply)
-        message.replaceChild(compose, message.lastElementChild)
+        var compose = h('div.message#' + reply.branch.substring(0, 10), composer(reply))
+        message.parentNode.appendChild(compose)
+        //message.replaceChild(compose, message.lastElementChild)
       }
     }))
     if (msg.value.author == id)

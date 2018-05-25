@@ -103,6 +103,15 @@ module.exports = function (opts) {
       filesById[file.link] = file
       var embed = file.type.indexOf('image/') === 0 ? '!' : ''
       textarea.value += embed + '['+file.name+']('+file.link+')'
+    }),
+    h('button.btn', 'Cancel', {
+      onclick: function () {
+        var message = document.getElementById(opts.branch.substring(0,10))
+        if (opts.updated)
+          message.parentNode.removeChild(message)
+        else
+          message.parentNode.removeChild(message)
+      }
     })
   )
 
