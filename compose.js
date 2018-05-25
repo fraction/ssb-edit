@@ -47,6 +47,27 @@ module.exports = function (opts) {
   else
     var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message'})
 
+  if (window.location.hash.substring(1) != 'compose')
+    var cancelBtn = h('button.btn', 'Cancel', {
+      onclick: function () {
+        var cancel
+        if (opts.updated) {
+          cancel = document.getElementById(opts.updated.substring(0,10))
+          var oldMessage = h('div.message__body', tools.markdown(opts.messageText))
+          cancel.parentNode.replaceChild(oldMessage, cancel)
+          console.log(opts.buttons)
+          oldMessage.parentNode.appendChild(opts.buttons)
+        } else if (opts.branch) {
+          cancel = document.getElementById(opts.branch.substring(0,10))
+          cancel.parentNode.removeChild(cancel)
+        }
+      }
+
+    })
+ 
+  else 
+    var cancel = h('span', '')
+
   var initialButtons = h('span', 
     h('button.btn', 'Preview', {
       onclick: function () {
@@ -104,22 +125,7 @@ module.exports = function (opts) {
       var embed = file.type.indexOf('image/') === 0 ? '!' : ''
       textarea.value += embed + '['+file.name+']('+file.link+')'
     }),
-    h('button.btn', 'Cancel', {
-      onclick: function () {
-        var cancel
-        if (opts.updated) {
-          cancel = document.getElementById(opts.updated.substring(0,10))
-          var oldMessage = h('div.message__body', tools.markdown(opts.messageText))
-          cancel.parentNode.replaceChild(oldMessage, cancel)
-          console.log(opts.buttons)
-          oldMessage.parentNode.appendChild(opts.buttons)
-        } else {
-          cancel = document.getElementById(opts.branch.substring(0,10))
-          cancel.parentNode.removeChild(cancel)
-        }
-      }
-
-    })
+    cancelBtn
   )
 
   composer.appendChild(container)
