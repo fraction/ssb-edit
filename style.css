@@ -16,6 +16,17 @@ body {
   border-bottom: 1px solid #252525;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-size: 1.2em;
+  margin-top: .35ex;
+}
+
+p {
+  margin-top: .35ex;
+  margin-bottom: 10px;
+}
+
+
 a {
   color: white;
   *text-decoration: none;
@@ -62,11 +73,21 @@ a:hover {
 .navbar li {
   margin-top: .3em;
   float: left;
-  padding-right: .6em;
-  padding-left: .3em;
+  margin-right: .6em;
+  margin-left: .3em;
   list-style-type: none;
 }
 
+.navbar li.right {
+  padding-left: .4em;
+  padding-right: .4em;
+  margin-top: .3em;
+  margin-right: 1.7em;
+  float: right;
+  list-style-type: none;
+  background: #333;
+  border-radius: 100%;
+}
 
 .hyperscroll > .content {
   max-width: 680px;
