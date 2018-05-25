@@ -106,12 +106,19 @@ module.exports = function (opts) {
     }),
     h('button.btn', 'Cancel', {
       onclick: function () {
-        var message = document.getElementById(opts.branch.substring(0,10))
-        if (opts.updated)
-          message.parentNode.removeChild(message)
-        else
-          message.parentNode.removeChild(message)
+        var cancel
+        if (opts.updated) {
+          cancel = document.getElementById(opts.updated.substring(0,10))
+          var oldMessage = h('div.message__body', tools.markdown(opts.messageText))
+          cancel.parentNode.replaceChild(oldMessage, cancel)
+          console.log(opts.buttons)
+          oldMessage.parentNode.appendChild(opts.buttons)
+        } else {
+          cancel = document.getElementById(opts.branch.substring(0,10))
+          cancel.parentNode.removeChild(cancel)
+        }
       }
+
     })
   )
 

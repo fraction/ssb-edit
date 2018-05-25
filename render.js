@@ -68,9 +68,10 @@ module.exports = function (msg) {
     if (msg.value.author == id)
       buttons.appendChild(h('button.btn', 'Edit', {
         onclick: function () {
-          var compose = composer(edit)
           var r = message.childNodes.length - 1
+          edit.buttons = message.childNodes[r]
           message.removeChild(message.childNodes[r])
+          var compose = h('div#' + edit.updated.substring(0, 10), composer(edit))
           message.replaceChild(compose, message.lastElementChild)
         }
       }))
