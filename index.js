@@ -16,11 +16,11 @@ var nav = h('div.navbar',
     h('li', h('a', {href: '#' + id}, avatar.name(id))),
     h('li', h('a', 'Compose', {
       onclick: function () {
-        document.getElementById('screen')
+        var currentScreen = document.getElementById('screen')
         var opts = {}
         opts.type = 'post'
         var composer = h('div.content#composer', h('div.message', compose(opts)))
-        screen.firstChild.insertBefore(composer, screen.firstChild.firstChild)
+        currentScreen.firstChild.insertBefore(composer, currentScreen.firstChild.firstChild)
       }
     })),
     h('li', h('a', {href: '#'}, 'Public')),
