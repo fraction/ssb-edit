@@ -12,7 +12,11 @@ var nav = h('div.navbar',
   h('div.internal',
     h('li', h('a', {href: '#' + id}, h('span.avatar--small', avatar.image(id)))),
     h('li', h('a', {href: '#' + id}, avatar.name(id))),
+    h('li', h('a', {href: '#compose' }, 'Compose')),
     h('li', h('a', {href: '#'}, 'Public')),
+    h('li', h('a', {href: '#private' }, 'Private')),
+    h('li', h('a', {href: '#mentions' }, 'Mentions')),
+    h('li', h('a', {href: '#key' }, 'Key')),
     h('li.right', h('a', {href: '#about'}, '?'))
   )
 )
