@@ -69,6 +69,17 @@ module.exports = function () {
       })
     })
   } 
+
+  else if (src == 'compose') {
+    var screen = document.getElementById('screen')
+
+    var opts = {}
+    opts.type = 'post'
+
+    var content = h('div.content', h('div.message', compose(opts)))
+
+    screen.appendChild(hyperscroll(content))
+  }
   else if (src == 'about') {
 
     var screen = document.getElementById('screen')
