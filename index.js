@@ -16,11 +16,14 @@ var nav = h('div.navbar',
     h('li', h('a', {href: '#' + id}, avatar.name(id))),
     h('li', h('a', 'Compose', {
       onclick: function () {
-        var currentScreen = document.getElementById('screen')
-        var opts = {}
-        opts.type = 'post'
-        var composer = h('div.content#composer', h('div.message', compose(opts)))
-        currentScreen.firstChild.insertBefore(composer, currentScreen.firstChild.firstChild)
+        if (document.getElementById('composer')) { return }
+        else {
+          var currentScreen = document.getElementById('screen')
+          var opts = {}
+          opts.type = 'post'
+          var composer = h('div.content#composer', h('div.message', compose(opts)))
+          currentScreen.firstChild.insertBefore(composer, currentScreen.firstChild.firstChild)
+        }
       }
     })),
     h('li', h('a', {href: '#'}, 'Public')),
