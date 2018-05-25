@@ -7,6 +7,14 @@ body {
   line-height: 20px;
 }
 
+#screen {
+  position: absolute;
+  top: 35px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
 .hyperscroll {
   width: 100%;
 }

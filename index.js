@@ -6,7 +6,7 @@ var id = require('./keys').id
 
 document.head.appendChild(h('style', require('./style.css.json')))
 
-var screen = h('div#screen', {style: {position: 'absolute', top: '35px', bottom: '0px', left: '0px', right: '0px'}})
+var screen = h('div#screen')
 
 var nav = h('div.navbar',
   h('div.internal',
@@ -27,7 +27,7 @@ route()
 
 window.onhashchange = function () {
   var oldscreen = document.getElementById('screen')
-  var newscreen = h('div#screen', {style: {position: 'absolute', top: '35px', bottom: '0px', left: '0px', right: '0px'}})
+  var newscreen = h('div#screen')
   oldscreen.parentNode.replaceChild(newscreen, oldscreen)
   route()
 }
