@@ -7,6 +7,8 @@ var h = require('hyperscript')
 var render = require('./render')
 var ref = require('ssb-ref')
 
+var fs = require('fs')
+
 var compose = require('./compose')
 
 function hash () {
@@ -66,7 +68,18 @@ module.exports = function () {
         )
       })
     })
-  } else {
+  } 
+  else if (src == 'about') {
+
+    var screen = document.getElementById('screen')
+
+    var about = require('./about')
+
+    var content = h('div.content', about)
+
+    screen.appendChild(hyperscroll(content))
+  }
+  else {
     var content = h('div.content')
     var screen = document.getElementById('screen')
     screen.appendChild(hyperscroll(content))
