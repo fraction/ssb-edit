@@ -43,10 +43,9 @@ module.exports = function (msg) {
     pull(
       sbot.query({query: [{$filter: {value: {content: {type: 'update', updated: msg.key}}}}]}),
       pull.drain(function (update) {
-        var newTimestamp = h('span.timestamp', 'Edited: ', h('a', {href: '#' + update.key}, human(new Date(update.value.timestamp))))
         var newMessage = h('div', tools.markdown(update.value.content.text))
         var latest = h('div.message__body', 
-          newTimestamp,
+          tools.timestamp(msg, {edited: true}),
           newMessage
         )
         var r = message.childNodes.length - 2

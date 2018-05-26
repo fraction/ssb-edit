@@ -24,6 +24,15 @@ function votes (msg) {
   return votes
 }
 
+module.exports.timestamp = function (msg, edited) {
+  var timestamp
+  if (edited)
+    timestamp = h('span.timestamp', 'Edited: ', h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp))))
+  else 
+    timestamp = h('span.timestamp', h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp))))
+  return timestamp
+}
+
 module.exports.header = function (msg) {
   return h('div.header',
     h('span.avatar',
@@ -32,7 +41,7 @@ module.exports.header = function (msg) {
         avatar.name(msg.value.author)
       )
     ),
-    h('span.timestamp', h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp)))),
+    exports.timestamp(msg),
     votes(msg)
   )
 }

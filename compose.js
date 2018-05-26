@@ -90,13 +90,11 @@ module.exports = function (opts, buttons) {
             msg.value.content.updated = opts.updated
 
           msg.value.content.text = textarea.value
-          console.log(msg)
-
+          
           if (opts.type == 'post') 
             var header = tools.header(msg)
           if (opts.type == 'update')
-            var header = h('div.timestamp', 'Edited: ', h('a', {href: msg.key}, human(new Date(msg.value.timestamp))))
-
+            var header = tools.timestamp(msg, {edited: true})
           var preview = h('div',
             header,
             h('div.message__content', tools.markdown(msg.value.content.text)),
@@ -108,10 +106,9 @@ module.exports = function (opts, buttons) {
                     console.log('Published!', msg)
                     if (opts.type == 'update') {
                       var originalMessage = document.getElementById(opts.updated.substring(0,10))
-                      console.log(originalMessage)
                       opts.messageText = msg.value.content.text
                       var newMessage = h('div.message__body', 
-                        h('div.timestamp', 'Edited: ', h('a', {href: msg.key}, human(new Date(msg.value.timestamp)))),
+                        tools.timestamp(msg, {edited: true}),
                         h('div', tools.markdown(msg.value.content.text))
                       )
                       originalMessage.parentNode.replaceChild(newMessage, originalMessage)
