@@ -2,8 +2,9 @@ var h = require('hyperscript')
 
 module.exports = function () {
   var content = h('div.message',
+    h('p', 'Hi! Welcome to Decent.'),
     h('p', h('strong', 'Decent'), ' is a decent(ralized) social network for business and development, built on ', h('a', {href: 'http://scuttlebot.io/'}, 'secure-scuttlebutt' ), '. Decent is maintained by ', h('a', {href: 'http://evbogue.com/'}, 'Everett Bogue'), '.'),
-    h('p', h('strong', 'git repositories:')),
+    h('p', h('strong', 'The code is open source:')),
     h('ul',
       h('li', h('a', {href: 'http://github.com/evbogue/decent'}, 'Decent'), ' [Github]'),
       h('li', h('a', {href: 'http://github.com/evbogue/mvd'}, 'mvd'), ' [Github]')
