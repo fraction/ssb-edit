@@ -9,70 +9,71 @@ var tools = require('./tools')
 var config = require('./config')()
 var id = require('./keys').id
 
+
 module.exports = function (msg) {
-  var edit = {}
-  var reply = {}
-
-  var message = h('div.message')
-
+  console.log(msg)
+  var message = h('div.message#' + msg.key.substring(0, 44))
   if (msg.value.content.type == 'post') {
-    reply.type = 'post'
-    reply.branch = msg.key
+    var opts = {}
+    var fallback = {}
+
+    opts.type = 'post'
+    opts.branch = msg.key
 
     if (msg.value.content.root) 
-      reply.root = msg.value.content.root
+      opts.root = msg.value.content.root
     else  
-      reply.root = msg.key 
- 
-    if (msg.value.author == id)
-      edit.original = msg.key
-      edit.type = 'update'
-      edit.updated = msg.key
-      edit.messageText = msg.value.content.text 
+      opts.root = msg.key 
 
     message.appendChild(tools.header(msg))
 
-    if (msg.value.content.root) {
+    if (msg.value.content.root) 
       message.appendChild(h('span', 're: ', tools.messageLink(msg.value.content.root)))
-    }
 
-    message.appendChild(
-      h('div.message__body', tools.markdown(msg.value.content.text))
-    )
+    message.appendChild(h('div.message__body', tools.markdown(msg.value.content.text)))
+
 
     pull(
-      sbot.query({query: [{$filter: {value: {content: {type: 'update', updated: msg.key}}}}]}),
+      sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}]}),
       pull.drain(function (update) {
         var newMessage = h('div', tools.markdown(update.value.content.text))
         var latest = h('div.message__body', 
-          tools.timestamp(msg, {edited: true}),
+          tools.timestamp(update, {edited: true}),
           newMessage
         )
-        var r = message.childNodes.length - 2
-        message.replaceChild(latest, message.childNodes[r])
-        edit.messageText = update.value.content.text
-        edit.original = msg.value.content.original
+        message.replaceChild(latest, message.childNodes[message.childNodes.length - 2])
+        fallback.messageText = update.value.content.text
+        opts.updated = update.key
+        opts.original = msg.key
       })
     )
+
     var buttons = h('div.buttons')
     buttons.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
         var r = message.childNodes.length - 1
-        buttons = message.childNodes[r]
-        //fallback = message.lastElementChild
-        //console.log(fallback)
-        var compose = h('div.message#' + reply.branch.substring(0, 10), composer(reply, buttons))
-        message.parentNode.appendChild(compose)
-        //message.replaceChild(compose, message.lastElementChild)
+        
+        fallback.buttons = message.childNodes[r]
+        var compose = h('div.message#re:' + msg.key.substring(0, 44), composer(opts, fallback))
+        message.parentNode.insertBefore(compose, message.nextSibling)
       }
     }))
+
     if (msg.value.author == id)
       buttons.appendChild(h('button.btn', 'Edit', {
         onclick: function () {
+          opts.type = 'edit'
+          if (!fallback.messageText) 
+            fallback.messageText = msg.value.content.text
+ 
+          if (!opts.updated)
+            opts.updated = msg.key
+            opts.original = msg.key
+
           var r = message.childNodes.length - 1
-          buttons = message.childNodes[r]
+          fallback.buttons = message.childNodes[r]
           message.removeChild(message.childNodes[r])
-          var compose = h('div#' + edit.updated.substring(0, 10), composer(edit, buttons))
+          var compose = h('div#edit:' + msg.key.substring(0, 44), composer(opts, fallback))
           message.replaceChild(compose, message.lastElementChild)
         }
       }))
@@ -106,6 +107,6 @@ module.exports = function (msg) {
     //message.appendChild(tools.header(msg)) 
     //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
     //return message
-    return
+    return h('div.invisibleMessage')
   }
 }

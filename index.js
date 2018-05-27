@@ -22,7 +22,11 @@ var nav = h('div.navbar',
           var opts = {}
           opts.type = 'post'
           var composer = h('div.content#composer', h('div.message', compose(opts)))
-          currentScreen.firstChild.insertBefore(composer, currentScreen.firstChild.firstChild)
+          if (currentScreen.firstChild.firstChild) {
+            currentScreen.firstChild.insertBefore(composer, currentScreen.firstChild.firstChild)
+          } else {
+            currentScreen.firstChild.appendChild(composer)
+          }
         }
       }
     })),

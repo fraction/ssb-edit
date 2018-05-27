@@ -37,32 +37,33 @@ function file_input (onAdded) {
   }))
 }
 
-module.exports = function (opts, buttons) {
+module.exports = function (opts, fallback) {
   var files = []
   var filesById = {}
-
-  console.log(opts)
 
   var composer = h('div.composer')
   var container = h('div.container')
 
-  if (opts.messageText)
-    var textarea = h('textarea.compose', opts.messageText)
-  else
+  if (opts.type == 'post')
     var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message'})
+  else
+    var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message'}, fallback.messageText) 
 
   var cancelBtn = h('button.btn', 'Cancel', {
     onclick: function () {
       var cancel
-      if (opts.updated) {
-        cancel = document.getElementById(opts.updated.substring(0,10))
-        var oldMessage = h('div.message__body', tools.markdown(opts.messageText))
+      console.log(opts)
+      if (opts.type == 'edit') {
+        cancel = document.getElementById('edit:' + opts.branch.substring(0,44))
+        var oldMessage = h('div.message__body', tools.markdown(fallback.messageText))
         cancel.parentNode.replaceChild(oldMessage, cancel)
-        oldMessage.parentNode.appendChild(buttons)
+        oldMessage.parentNode.appendChild(fallback.buttons)
       } else if (opts.branch) {
-        cancel = document.getElementById(opts.branch.substring(0,10))
+        //cancel reply composer 
+        cancel = document.getElementById('re:' + opts.branch.substring(0,44))
         cancel.parentNode.removeChild(cancel)
       } else {
+        // cancel generic composer
         cancel = document.getElementById('composer')
         cancel.parentNode.removeChild(cancel)
       }
@@ -104,18 +105,19 @@ module.exports = function (opts, buttons) {
                   sbot.publish(msg.value.content, function (err, msg) {
                     if(err) throw err
                     console.log('Published!', msg)
-                    if (opts.type == 'update') {
-                      var originalMessage = document.getElementById(opts.updated.substring(0,10))
-                      opts.messageText = msg.value.content.text
-                      var newMessage = h('div.message__body', 
+                    if (opts.type == 'edit') {
+                      var message = document.getElementById(opts.branch.substring(0,44))
+                      fallback.messageText = msg.value.content.text
+                      var editBody = h('div.message__body',
                         tools.timestamp(msg, {edited: true}),
                         h('div', tools.markdown(msg.value.content.text))
                       )
-                      originalMessage.parentNode.replaceChild(newMessage, originalMessage)
-                      newMessage.parentNode.appendChild(buttons)
+                      
+                      message.replaceChild(editBody, message.childNodes[message.childNodes.length - 1])
+                      editBody.parentNode.appendChild(fallback.buttons)
                     } else {
                       if (opts.branch)
-                        cancel = document.getElementById(opts.branch.substring(0,10))
+                        cancel = document.getElementById('re:' + opts.branch.substring(0,44))
                       else
                         cancel = document.getElementById('composer')
                       cancel.parentNode.removeChild(cancel)  
