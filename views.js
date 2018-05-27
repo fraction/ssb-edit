@@ -7,6 +7,8 @@ var h = require('hyperscript')
 var render = require('./render')
 var ref = require('ssb-ref')
 
+var config = require('./config')()
+
 var fs = require('fs')
 
 var compose = require('./compose')
@@ -26,7 +28,7 @@ module.exports = function () {
       return pull(
         More(sbot.userStream, opts, ['value', 'sequence']),
         pull.map(function (msg) {
-          return h('div', render(msg))
+          return render(msg)
         })
       )
     }
@@ -57,13 +59,13 @@ module.exports = function () {
         if (err) { console.log('could not find root')}
         data.value = data
         data.key = root
-        content.appendChild(h('div', render(data)))
+        content.appendChild(render(data))
         pull(
           sbot.links({rel: 'root', dest: root, values: true, keys: true, live: true}),
           pull.drain(function (msg) {
             console.log(msg)
             if (msg.value)
-              content.appendChild(h('div', render(msg)))
+              content.appendChild(render(msg))
           })
         )
       })
@@ -79,8 +81,44 @@ module.exports = function () {
     var content = h('div.content', about)
 
     screen.appendChild(hyperscroll(content))
-  }
-  else {
+  } 
+  
+  else if (src == 'key') {
+    var screen = document.getElementById('screen')
+
+    var importKey = h('textarea.import', {placeholder: 'Import a new public/private key', name: 'textarea', style: 'width: 97%; height: 100px;'})
+
+    var content = h('div.content',
+      h('div.message#key',
+        h('h1', 'Your Key'),
+        h('p', {innerHTML: 'Your public/private key is: <pre><code>' + localStorage[config.caps.shs + '/secret'] + '</code></pre>'},
+        h('button.btn', {onclick: function (e){
+            localStorage[config.caps.shs +'/secret'] = ''
+            alert('Your public/private key has been deleted')
+            e.preventDefault()
+            location.hash = ""
+            location.reload()
+          }}, 'Delete Key')
+        ),
+        h('hr'),
+        h('form',
+          importKey,
+          h('button.btn', {onclick: function (e){
+            if(importKey.value) {
+              localStorage[config.caps.shs + '/secret'] = importKey.value.replace(/\s+/g, ' ')
+              e.preventDefault()
+              alert('Your public/private key has been updated')
+            }
+            location.hash = ""
+            location.reload()
+          }}, 'Import key'),
+        )
+      )
+    )
+  
+    screen.appendChild(hyperscroll(content))
+
+  } else {
     var content = h('div.content')
     var screen = document.getElementById('screen')
     screen.appendChild(hyperscroll(content))
@@ -88,7 +126,7 @@ module.exports = function () {
       return pull(
         More(sbot.createLogStream, opts),
         pull.map(function (msg) {
-          return h('div', render(msg))
+          return render(msg)
         })
       )
     }

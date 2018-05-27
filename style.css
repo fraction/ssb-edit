@@ -29,6 +29,15 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: .35ex;
 }
 
+hr {
+  border: solid #222;
+  clear: both;
+  border-width: 1px 0 0;
+  height: 0;
+  margin-bottom: .9em;
+}
+
+
 p {
   margin-top: .35ex;
   margin-bottom: 10px;
@@ -150,7 +159,7 @@ a:hover {
   margin-right: .2em;
 }
 
-.compose {
+.compose, textarea {
   font-family: sans-serif;
   font-size: 14px;
   line-height: 20px;
