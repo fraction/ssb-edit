@@ -144,7 +144,7 @@ a:hover {
   background: #141414;
 }
 
-.message img {
+.message img, .message video {
   max-width: 100%;
 }
 
