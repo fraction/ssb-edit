@@ -30,9 +30,9 @@ var nav = h('div.navbar',
         }
       }
     })),
-    h('li', h('a', {href: '#'}, 'Stream')),
+    h('li', h('a', {href: '#'}, 'Public')),
     h('li', h('a', {href: '#mentions' }, 'Mentions')),
-    h('li', h('a', {href: '#private' }, 'Inbox')),
+    h('li', h('a', {href: '#private' }, 'Direct')),
     h('li', h('a', {href: '#key' }, 'Key')),
     h('li.right', h('a', {href: '#about'}, '?'))
   )
