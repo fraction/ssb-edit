@@ -14,11 +14,12 @@ module.exports = function (msg) {
   console.log(msg)
   var message = h('div.message#' + msg.key.substring(0, 44))
   if (msg.value.content.type == 'post') {
-    var opts = {}
+    var opts = {
+      type: 'post',
+      branch: msg.key
+    }
     var fallback = {}
 
-    opts.type = 'post'
-    opts.branch = msg.key
 
     if (msg.value.content.root) 
       opts.root = msg.value.content.root
@@ -52,7 +53,8 @@ module.exports = function (msg) {
     buttons.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
         var r = message.childNodes.length - 1
-        
+        delete opts.updated
+        delete opts.original 
         fallback.buttons = message.childNodes[r]
         var compose = h('div.message#re:' + msg.key.substring(0, 44), composer(opts, fallback))
         message.parentNode.insertBefore(compose, message.nextSibling)

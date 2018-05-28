@@ -76,22 +76,14 @@ module.exports = function (opts, fallback) {
       onclick: function () {
         if (textarea.value) {
           var msg = {}
+         
           msg.value = {
             "author": id,
-            "content": {
-              "type": opts.type
-            }
+            "content": opts
           }
-
-          if (opts.root)
-            msg.value.content.root = opts.root
-          if (opts.original)
-            msg.value.content.original = opts.original
-          if (opts.updated)
-            msg.value.content.updated = opts.updated
-
-          msg.value.content.text = textarea.value
           
+          msg.value.content.text = textarea.value
+          console.log(msg)
           if (opts.type == 'post') 
             var header = tools.header(msg)
           if (opts.type == 'update')
