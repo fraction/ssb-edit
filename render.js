@@ -55,6 +55,7 @@ module.exports = function (msg) {
         var r = message.childNodes.length - 1
         delete opts.updated
         delete opts.original 
+        delete fallback.messageText
         fallback.buttons = message.childNodes[r]
         var compose = h('div.message#re:' + msg.key.substring(0, 44), composer(opts, fallback))
         message.parentNode.insertBefore(compose, message.nextSibling)
