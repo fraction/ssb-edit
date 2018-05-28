@@ -9,6 +9,8 @@ var ref = require('ssb-ref')
 
 var config = require('./config')()
 
+var id = require('./keys').id
+
 var fs = require('fs')
 
 var compose = require('./compose')
@@ -23,6 +25,32 @@ var about = function () {
   screen.appendChild(hyperscroll(content))
 }
 
+var mentionsStream = function () {
+  var content = h('div.content')
+
+  var screen = document.getElementById('screen')
+
+  screen.appendChild(hyperscroll(content))
+
+  function createStream (opts) {
+    return pull(
+      sbot.backlinks({query: [{$filter: {dest: id}}], reverse: true}),
+      pull.map(function (msg) {
+        console.log(msg)
+        if (msg.value.private == true) 
+          return 'ignoring private message'
+        else
+          return render(msg)
+      })
+    )
+  }
+
+  pull(
+    createStream({reverse: true, limit: 10}),
+    stream.bottom(content)
+  )
+}
+
 var logStream = function () {
   var content = h('div.content')
   var screen = document.getElementById('screen')
@@ -34,6 +62,7 @@ var logStream = function () {
       pull.map(function (msg) {
         return render(msg)
       })
+      
     )
   }
 
@@ -149,6 +178,9 @@ module.exports = function () {
     userStream(src)
   } else if (ref.isMsg(src)) {
     msgThread(src)
+  } else if (src == 'mentions') {
+    console.log('mentions')
+    mentionsStream()
   } else if (src == 'about') {
     about()
   } else if (src == 'key') {

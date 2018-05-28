@@ -34,6 +34,7 @@ if (argv[0] == 'server') {
     .use(require('ssb-blobs'))
     .use(require('ssb-query'))
     .use(require('ssb-links'))
+    .use(require('ssb-backlinks'))
     .use(require('ssb-ebt'))
     .use(require('ssb-ooo'))
     .use(require('scuttlebot/plugins/invite'))
