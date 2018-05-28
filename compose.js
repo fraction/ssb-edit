@@ -62,6 +62,8 @@ module.exports = function (opts, fallback) {
         //cancel reply composer 
         cancel = document.getElementById('re:' + opts.branch.substring(0,44))
         cancel.parentNode.removeChild(cancel)
+        message = document.getElementById(opts.branch.substring(0,44))
+        message.appendChild(fallback.buttons)
       } else {
         // cancel generic composer
         cancel = document.getElementById('composer')

@@ -57,12 +57,14 @@ module.exports = function (msg) {
     var buttons = h('div.buttons')
     buttons.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
+        opts.type = 'post'
         var r = message.childNodes.length - 1
         delete opts.updated
         delete opts.original 
         delete fallback.messageText
         fallback.buttons = message.childNodes[r]
         var compose = h('div.message#re:' + msg.key.substring(0, 44), composer(opts, fallback))
+        message.removeChild(message.childNodes[r])
         message.parentNode.insertBefore(compose, message.nextSibling)
       }
     }))
