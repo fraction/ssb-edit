@@ -11,7 +11,6 @@ var id = require('./keys').id
 
 
 module.exports = function (msg) {
-  console.log(msg)
   var message = h('div.message#' + msg.key.substring(0, 44))
   if (msg.value.content.type == 'post') {
     var opts = {
@@ -37,9 +36,8 @@ module.exports = function (msg) {
     pull(
       sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}], limit: 100, live: true}),
       pull.drain(function (update) {
-        console.log(update)
         if (update.sync) { 
-          console.log('Waiting for new edits.')
+          //console.log('Waiting for new edits.')
         } else {
           var newMessage = h('div', tools.markdown(update.value.content.text))
           var latest = h('div.message__body', 
@@ -87,31 +85,16 @@ module.exports = function (msg) {
           message.replaceChild(compose, message.lastElementChild)
         }
       }))
-
+    buttons.appendChild(tools.star(msg))
     message.appendChild(buttons)
     return message
 
   } else if (msg.value.content.type == 'vote') {
-    message.appendChild(tools.header(msg))
-    message.appendChild(h('span', 'Starred:'))
-    var embed = msg.value.content.vote.link
-
-    var embedded = h('div.embedded')
-    sbot.get(embed, function (err, msg) {
-      if (err) {console.log('could not find message locally, try ooo?') }
-      msg.value = msg
-      msg.key = embed
-      if (msg.value.content.text) {
-        message.appendChild(embedded)
-        embedded.appendChild(tools.header(msg))
-        embedded.appendChild(
-          h('div.message__body', 
-            tools.markdown(msg.value.content.text.substring(0, 256) + '...'),
-            h('span', '[', h('a', {href: '#' + msg.key}, 'Full Post'), ']')
-          )
-        )
-      }
-    })
+    if (msg.value.content.vote.value == 1)
+      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'star.png'}), ' ', h('a', {href: msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
+    else if (msg.value.content.vote.value == -1)
+      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'stars.png'}), ' ', h('a', {href: msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
+    message.appendChild(tools.mini(msg, link))
     return message
   } else {
     //message.appendChild(tools.header(msg)) 

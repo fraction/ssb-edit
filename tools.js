@@ -9,7 +9,9 @@ var sbot = require('./scuttlebot')
 
 var config = require('./config')()
 
-function votes (msg) {
+var id = require('./keys').id
+
+/*function votes (msg) {
   var votes = h('div.votes')
   if (msg.key) {
     pull(
@@ -22,6 +24,90 @@ function votes (msg) {
     )
   }
   return votes
+}*/
+
+function votes (msg) {
+  var votes = h('div.votes')
+  if (msg.key) {
+    console.log('Looking for votes')
+    pull(
+      sbot.backlinks({query: [{$filter: {value: {content: {type: 'vote', vote: {link: msg.key}}}}}], live: true}),
+      pull.drain(function (data) {
+        if (data.sync) { console.log('waiting for new votes')}
+        else if (data.value.content.vote.value == 1) {
+          votes.appendChild(h('a#vote:' + data.value.author.substring(0, 44), {href:'#' + data.value.author}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
+        }
+        else if (data.value.content.vote.value == -1) {
+          var lookFor = 'vote:' + data.value.author.substring(0, 44)
+          var remove = document.getElementById(lookFor)
+          remove.parentNode.removeChild(remove)
+        }       
+      })
+    )
+  }
+  return votes
+}
+
+module.exports.star = function (msg) {
+  var votebutton = h('span#star:' + msg.key.substring(0, 44))
+  var vote = {
+    type: 'vote',
+    vote: { link: msg.key, expression: 'Star' }
+  }
+
+  var star = h('button.btn.right',
+    h('img.emoji', {src: config.emojiUrl + 'star.png'}), {
+      onclick: function () {
+        console.log(vote)
+        vote.vote.value = 1
+        sbot.publish(vote, function (err, voted) {
+          if(err) throw err
+          console.log('Starred!', voted)
+          votebutton.replaceChild(unstar, star)   
+        })
+      }
+    }
+  )
+
+  var unstar = h('button.btn.right', 
+    h('img.emoji', {src: config.emojiUrl + 'stars.png'}), { 
+      onclick: function () {
+        vote.vote.value = -1
+        sbot.publish(vote, function (err, voted) {
+          if(err) throw err
+          console.log('Unstarred!', voted)
+          votebutton.replaceChild(star, unstar)
+        })
+      }
+    }
+  )
+
+  pull(
+    sbot.backlinks({query: [{$filter: {value: {content: {type: 'vote', vote: {link: msg.key}}}}}]}),
+    pull.drain(function (data) {
+      if (data.sync) { }
+      else if (data.value.content.vote.value == 1) {
+        votebutton.replaceChild(unstar, star)
+      }
+      else if (data.value.content.vote.value == -1) {
+        votebutton.replaceChild(star, unstar)
+      }
+    })
+  )
+  /*pull(
+    sbot.links({dest: msg.key, rel: 'vote', author: id}),
+    pull.drain(function (data) {
+      if (data)
+        console.log(data)
+        if (data.value.vote.value == 1)
+          votebutton.replaceChild(unstar, star)
+        else if (data.value.vote.value == -1)
+          votebutton.replaceChild(star, unstar)
+    })
+  )*/
+
+  votebutton.appendChild(star)
+  return votebutton
 }
 
 module.exports.timestamp = function (msg, edited) {
@@ -32,6 +118,21 @@ module.exports.timestamp = function (msg, edited) {
     timestamp = h('span.timestamp', h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp))))
   return timestamp
 }
+
+
+module.exports.mini = function (msg, content) {
+  return h('div.mini',
+    h('span.avatar',
+      h('a', {href: '#' + msg.value.author},
+        h('span.avatar--small', avatar.image(msg.value.author)),
+        avatar.name(msg.value.author)
+      )
+    ),
+    exports.timestamp(msg),
+    content
+  )
+}
+
 
 module.exports.header = function (msg) {
   return h('div.header',
