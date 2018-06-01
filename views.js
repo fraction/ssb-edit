@@ -89,7 +89,6 @@ var mentionsStream = function () {
     return pull(
       sbot.backlinks({query: [{$filter: {dest: id}}], reverse: true}),
       pull.map(function (msg) {
-        console.log(msg)
         if (msg.value.private == true) 
           return 'ignoring private message'
         else
@@ -162,7 +161,6 @@ var msgThread = function(src) {
   sbot.get(src, function (err, data) {
     if (err) {console.log('could not find message') }
     data.value = data
-    console.log(data)
     var root = src
     if (data.value.content.root)
       root = data.value.content.root
@@ -174,7 +172,6 @@ var msgThread = function(src) {
       pull(
         sbot.links({rel: 'root', dest: root, values: true, keys: true, live: true}),
         pull.drain(function (msg) {
-          console.log(msg)
           if (msg.value)
             content.appendChild(render(msg))
         })
@@ -232,7 +229,6 @@ module.exports = function () {
   } else if (ref.isMsg(src)) {
     msgThread(src)
   } else if (src == 'mentions') {
-    console.log('mentions')
     mentionsStream()
   } else if (src == 'about') {
     about()
