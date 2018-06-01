@@ -11,54 +11,42 @@ var config = require('./config')()
 
 var id = require('./keys').id
 
-/*function votes (msg) {
-  var votes = h('div.votes')
-  if (msg.key) {
-    pull(
-      sbot.links({dest: msg.key, rel: 'vote'}),
-      pull.drain(function (data) {
-        if (data) {
-          votes.appendChild(h('a', {href:'#' + data.key}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
-        } else {console.log(data)}
-      })
-    )
-  }
-  return votes
-}*/
-
 function votes (msg) {
-  var votes = h('div.votes')
-  if (msg.key) {
-    console.log('Looking for votes')
-    pull(
-      sbot.backlinks({query: [{$filter: {value: {content: {type: 'vote', vote: {link: msg.key}}}}}], live: true}),
-      pull.drain(function (data) {
-        if (data.sync) { console.log('waiting for new votes')}
-        else if (data.value.content.vote.value == 1) {
-          votes.appendChild(h('a#vote:' + data.value.author.substring(0, 44), {href:'#' + data.value.author}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
+  var votes = h('div.votes') 
+
+  pull(
+    sbot.links({rel: 'vote', dest: msg.key }),
+    pull.drain(function (link) {
+      sbot.get(link.key, function (err, data) {
+        if (err) throw err
+        if (data.content.vote.value == 1) {
+          votes.appendChild(h('a#vote:' + data.author.substring(0, 44), {href:'#' + data.author, title: avatar.name(data.author)}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
         }
-        else if (data.value.content.vote.value == -1) {
-          var lookFor = 'vote:' + data.value.author.substring(0, 44)
+        else if (data.content.vote.value == -1) {
+          var lookFor = 'vote:' + data.author.substring(0, 44)
           var remove = document.getElementById(lookFor)
           remove.parentNode.removeChild(remove)
-        }       
+        }
       })
-    )
-  }
+    })
+  )
+
   return votes
 }
 
 module.exports.star = function (msg) {
+
   var votebutton = h('span#star:' + msg.key.substring(0, 44))
+
+
   var vote = {
     type: 'vote',
     vote: { link: msg.key, expression: 'Star' }
   }
 
-  var star = h('button.btn.right',
+  var star = h('button.btn.right', 'Star ',
     h('img.emoji', {src: config.emojiUrl + 'star.png'}), {
       onclick: function () {
-        console.log(vote)
         vote.vote.value = 1
         sbot.publish(vote, function (err, voted) {
           if(err) throw err
@@ -69,7 +57,7 @@ module.exports.star = function (msg) {
     }
   )
 
-  var unstar = h('button.btn.right', 
+  var unstar = h('button.btn.right ', 'Unstar ', 
     h('img.emoji', {src: config.emojiUrl + 'stars.png'}), { 
       onclick: function () {
         vote.vote.value = -1
@@ -82,31 +70,26 @@ module.exports.star = function (msg) {
     }
   )
 
-  pull(
-    sbot.backlinks({query: [{$filter: {value: {content: {type: 'vote', vote: {link: msg.key}}}}}]}),
-    pull.drain(function (data) {
-      if (data.sync) { }
-      else if (data.value.content.vote.value == 1) {
-        votebutton.replaceChild(unstar, star)
-      }
-      else if (data.value.content.vote.value == -1) {
-        votebutton.replaceChild(star, unstar)
-      }
-    })
-  )
+  votebutton.appendChild(star)
+
   /*pull(
-    sbot.links({dest: msg.key, rel: 'vote', author: id}),
-    pull.drain(function (data) {
-      if (data)
-        console.log(data)
-        if (data.value.vote.value == 1)
-          votebutton.replaceChild(unstar, star)
-        else if (data.value.vote.value == -1)
-          votebutton.replaceChild(star, unstar)
+    sbot.links({rel: 'vote', dest: msg.key}),
+    pull.drain(function (link) {
+      sbot.get(link.key, function (err, data) {
+        if (err) throw err
+        if (data.author == id)
+          console.log(newbutton)
+          console.log(data)
+          if (data.content.vote.value == 1) {
+            console.log(unstar)
+          }
+          else if (data.content.vote.value == -1) {
+            console.log(star)
+          }
+      })
     })
   )*/
 
-  votebutton.appendChild(star)
   return votebutton
 }
 
