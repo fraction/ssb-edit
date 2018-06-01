@@ -91,9 +91,9 @@ module.exports = function (msg) {
 
   } else if (msg.value.content.type == 'vote') {
     if (msg.value.content.vote.value == 1)
-      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'star.png'}), ' ', h('a', {href: msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
+      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'star.png'}), ' ', h('a', {href: '#' + msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
     else if (msg.value.content.vote.value == -1)
-      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'stars.png'}), ' ', h('a', {href: msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
+      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'stars.png'}), ' ', h('a', {href: '#' + msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
     message.appendChild(tools.mini(msg, link))
     return message
   } else {
