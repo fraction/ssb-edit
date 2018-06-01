@@ -11,33 +11,8 @@ var config = require('./config')()
 
 var id = require('./keys').id
 
-function votes (msg) {
-  var votes = h('div.votes') 
-
-  pull(
-    sbot.links({rel: 'vote', dest: msg.key }),
-    pull.drain(function (link) {
-      sbot.get(link.key, function (err, data) {
-        if (err) throw err
-        if (data.content.vote.value == 1) {
-          votes.appendChild(h('a#vote:' + data.author.substring(0, 44), {href:'#' + data.author, title: avatar.name(data.author)}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
-        }
-        else if (data.content.vote.value == -1) {
-          var lookFor = 'vote:' + data.author.substring(0, 44)
-          var remove = document.getElementById(lookFor)
-          remove.parentNode.removeChild(remove)
-        }
-      })
-    })
-  )
-
-  return votes
-}
-
 module.exports.star = function (msg) {
-
-  var votebutton = h('span#star:' + msg.key.substring(0, 44))
-
+  var votebutton = h('span.star:' + msg.key.substring(0,44))
 
   var vote = {
     type: 'vote',
@@ -51,14 +26,14 @@ module.exports.star = function (msg) {
         sbot.publish(vote, function (err, voted) {
           if(err) throw err
           console.log('Starred!', voted)
-          votebutton.replaceChild(unstar, star)   
+          votebutton.replaceChild(unstar, star)
         })
       }
     }
   )
-
-  var unstar = h('button.btn.right ', 'Unstar ', 
-    h('img.emoji', {src: config.emojiUrl + 'stars.png'}), { 
+  
+  var unstar = h('button.btn.right ', 'Unstar ',
+    h('img.emoji', {src: config.emojiUrl + 'stars.png'}), {
       onclick: function () {
         vote.vote.value = -1
         sbot.publish(vote, function (err, voted) {
@@ -70,27 +45,54 @@ module.exports.star = function (msg) {
     }
   )
 
-  votebutton.appendChild(star)
-
-  /*pull(
-    sbot.links({rel: 'vote', dest: msg.key}),
-    pull.drain(function (link) {
-      sbot.get(link.key, function (err, data) {
-        if (err) throw err
-        if (data.author == id)
-          console.log(newbutton)
-          console.log(data)
-          if (data.content.vote.value == 1) {
-            console.log(unstar)
-          }
-          else if (data.content.vote.value == -1) {
-            console.log(star)
-          }
-      })
-    })
-  )*/
-
+  votebutton.appendChild(star) 
+  /*if (votebutton) {
+    if (votebutton.firstChild) {
+      console.log(votebutton.firstChild)
+      votebutton.removeChild(votebutton.firstChild)
+    }
+    if (msg.value.content.passedVote) {
+      console.log(msg.value.content.passedVote)
+      if (msg.value.content.passedVote == 1) {
+        votebutton.appendChild(unstar)
+      } else { votebutton.appendChild(star) }
+    } else { 
+    }
+  }*/
   return votebutton
+}
+
+function votes (msg) {
+  var votes = h('div.votes') 
+  if (msg.key) {
+    pull(
+      sbot.links({rel: 'vote', dest: msg.key, live: true }),
+      pull.drain(function (link) {
+        if (link.key) {
+          sbot.get(link.key, function (err, data) {
+            if (err) throw err
+            if (data.author == id) {
+              msg.value.content.passedVote = data.content.vote.value 
+              exports.star(msg)
+            }
+            if (data.content.vote.value == 1) {
+              if (localStorage[data.author + 'name'])
+                name = localStorage[data.author + 'name']
+              else
+                name = data.author
+              votes.appendChild(h('a#vote:' + data.author.substring(0, 44), {href:'#' + data.author, title: name}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
+            }
+            else if (data.content.vote.value == -1) {
+              var lookFor = 'vote:' + data.author.substring(0, 44)
+              var remove = document.getElementById(lookFor)
+              remove.parentNode.removeChild(remove)
+            }
+          })
+        }
+      })
+    )
+  }
+  return votes
 }
 
 module.exports.timestamp = function (msg, edited) {

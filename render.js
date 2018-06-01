@@ -85,6 +85,7 @@ module.exports = function (msg) {
           message.replaceChild(compose, message.lastElementChild)
         }
       }))
+
     buttons.appendChild(tools.star(msg))
     message.appendChild(buttons)
     return message
