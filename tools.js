@@ -46,19 +46,26 @@ module.exports.star = function (msg) {
   )
 
   votebutton.appendChild(star) 
-  /*if (votebutton) {
-    if (votebutton.firstChild) {
-      console.log(votebutton.firstChild)
-      votebutton.removeChild(votebutton.firstChild)
-    }
-    if (msg.value.content.passedVote) {
-      console.log(msg.value.content.passedVote)
-      if (msg.value.content.passedVote == 1) {
-        votebutton.appendChild(unstar)
-      } else { votebutton.appendChild(star) }
-    } else { 
-    }
-  }*/
+
+  pull(
+    sbot.links({rel: 'vote', dest: msg.key, live: true}),
+    pull.drain(function (link) {
+      console.log(link)
+      if (link.key) {
+        sbot.get(link.key, function (err, data) {
+          if (err) throw err
+          if (data.author == id) {
+            console.log(data)
+            if (data.content.vote.value == 1)
+              votebutton.replaceChild(unstar, star)
+            if (data.content.vote.value == -1)
+              votebutton.replaceChild(star, unstar)
+          }
+        })
+      }
+    })
+  )
+
   return votebutton
 }
 
@@ -71,10 +78,6 @@ function votes (msg) {
         if (link.key) {
           sbot.get(link.key, function (err, data) {
             if (err) throw err
-            if (data.author == id) {
-              msg.value.content.passedVote = data.content.vote.value 
-              exports.star(msg)
-            }
             if (data.content.vote.value == 1) {
               if (localStorage[data.author + 'name'])
                 name = localStorage[data.author + 'name']
