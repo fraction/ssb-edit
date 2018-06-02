@@ -12,6 +12,13 @@ var id = require('./keys').id
 
 module.exports = function (msg) {
   var message = h('div.message#' + msg.key.substring(0, 44))
+
+  if (localStorage['mute:' + msg.value.author]) {
+    var muted = h('span', ' muted')
+    message.appendChild(tools.mini(msg, muted))
+    return message
+  } 
+
   if (msg.value.content.type == 'post') {
     var opts = {
       type: 'post',
