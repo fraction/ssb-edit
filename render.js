@@ -97,10 +97,20 @@ module.exports = function (msg) {
       var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'stars.png'}), ' ', h('a', {href: '#' + msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
     message.appendChild(tools.mini(msg, link))
     return message
+  } else if (typeof msg.value.content === 'string') {
+    var privateMsg = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'lock.png'}))
+    message.appendChild(tools.mini(msg, privateMsg))
+    return message
   } else {
-    //message.appendChild(tools.header(msg)) 
+
+    //FULL FALLBACK
+    //message.appendChild(tools.header(msg))
     //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
     //return message
-    return h('div.invisibleMessage')
+
+    //MINI FALLBACK
+    var fallback = h('span', ' ' + msg.value.content.type)
+    message.appendChild(tools.mini(msg, fallback))
+    return message 
   }
 }
