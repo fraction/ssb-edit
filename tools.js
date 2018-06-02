@@ -26,7 +26,6 @@ module.exports.star = function (msg) {
         sbot.publish(vote, function (err, voted) {
           if(err) throw err
           console.log('Starred!', voted)
-          votebutton.replaceChild(unstar, star)
         })
       }
     }
@@ -39,7 +38,6 @@ module.exports.star = function (msg) {
         sbot.publish(vote, function (err, voted) {
           if(err) throw err
           console.log('Unstarred!', voted)
-          votebutton.replaceChild(star, unstar)
         })
       }
     }
