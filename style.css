@@ -159,6 +159,14 @@ a:hover {
   margin-right: .2em;
 }
 
+.avatar--medium img {
+  vertical-align: top;
+  width: 5em;
+  height: 5em;
+  margin-right: .5em;
+  margin-bottom: .5em;
+}
+
 .compose, textarea, input {
   font-family: sans-serif;
   font-size: 14px;

@@ -9,6 +9,7 @@ var ref = require('ssb-ref')
 
 var config = require('./config')()
 
+var avatar = require('./avatar')
 var id = require('./keys').id
 
 var fs = require('fs')
@@ -151,6 +152,45 @@ var userStream = function (src) {
       createStream({reverse: true, live: false, limit: 10, id: src}),
       stream.bottom(content)
     )
+
+
+    var profile = h('div.content#profile', h('div.message'))
+
+    if (screen.firstChild.firstChild) {
+      screen.firstChild.insertBefore(profile, screen.firstChild.firstChild)
+    } else {
+      screen.firstChild.appendChild(profile)
+    }
+
+    var avatars = h('div.avatars', 
+      h('a', {href: '#' + src},
+        h('span.avatar--medium', avatar.image(src)),
+        avatar.name(src)
+      )
+    )
+
+    var buttons = h('div.buttons')
+
+   
+    profile.firstChild.appendChild(avatars)
+    profile.firstChild.appendChild(buttons)
+
+    if (localStorage['mute:' + src])
+      var mute = h('button.btn', 'Unmute', {
+        onclick: function () {
+          delete localStorage['mute:' + src]
+          location.reload()
+        }
+      })
+    else
+      var mute = h('button.btn', 'Mute', {
+        onclick: function () {
+          localStorage['mute:' + src] = true
+          location.reload()
+        }
+      })
+    
+    buttons.appendChild(mute)
 
 }
 
