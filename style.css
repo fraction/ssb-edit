@@ -148,6 +148,10 @@ a:hover {
   max-width: 100%;
 }
 
+img {
+  border-radius: 3px;
+}
+
 .timestamp, .votes {
   float: right;
 }
