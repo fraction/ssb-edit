@@ -30,9 +30,9 @@ var nav = h('div.navbar',
         }
       }
     })),
-    h('li', h('a', {href: '#'}, 'Public')),
-    h('li', h('a', {href: '#mentions' }, 'Mentions')),
-    h('li', h('a', {href: '#private' }, 'Direct')),
+    h('li', h('a', {href: '#' }, 'Queue')),
+    h('li', h('a', {href: '#posts' }, 'Posts')),
+    h('li', h('a', {href: '#all'}, 'All')),
     h('li', h('a', {href: '#key' }, 'Key')),
     h('li.right', h('a', {href: '#about'}, '?'))
   )

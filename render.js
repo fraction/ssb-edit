@@ -19,7 +19,13 @@ module.exports = function (msg) {
     return message
   } 
 
-  if (msg.value.content.type == 'post') {
+  if (msg.value.private == true) {
+    var privateMsg = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'lock.png'}), ' ', h('button.btn', 'Open'))
+    message.appendChild(tools.mini(msg, privateMsg))
+    return message  
+  }
+
+  else if (msg.value.content.type == 'post') {
     var opts = {
       type: 'post',
       branch: msg.key
@@ -38,7 +44,6 @@ module.exports = function (msg) {
       message.appendChild(h('span', 're: ', tools.messageLink(msg.value.content.root)))
 
     message.appendChild(h('div.message__body', tools.markdown(msg.value.content.text)))
-
 
     pull(
       sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}], limit: 100, live: true}),
@@ -93,15 +98,21 @@ module.exports = function (msg) {
         }
       }))
 
+
+    var done = h('button.btn.right', '-')
+    var add = h('button.btn.right', '+')
+
+    buttons.appendChild(done)
+    buttons.appendChild(add) 
     buttons.appendChild(tools.star(msg))
     message.appendChild(buttons)
     return message
 
   } else if (msg.value.content.type == 'vote') {
     if (msg.value.content.vote.value == 1)
-      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'star.png'}), ' ', h('a', {href: '#' + msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
+      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'star.png'}), ' ', h('a', {href: '#' + msg.value.content.vote.link}, tools.messageLink(msg.value.content.vote.link)))
     else if (msg.value.content.vote.value == -1)
-      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'stars.png'}), ' ', h('a', {href: '#' + msg.value.content.vote.link}, msg.value.content.vote.link.substring(0,16) + '...'))
+      var link = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'stars.png'}), ' ', h('a', {href: '#' + msg.value.content.vote.link}, tools.messageLink(msg.value.content.vote.link)))
     message.appendChild(tools.mini(msg, link))
     return message
   } else if (typeof msg.value.content === 'string') {

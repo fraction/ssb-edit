@@ -46,7 +46,7 @@
     "ssb-links": "^3.0.3",
     "ssb-markdown": "^3.6.0",
     "ssb-ooo": "^1.0.9",
-    "ssb-query": "^2.0.1",
+    "ssb-query": "git+https://git@github.com/evbogue/ssb-query.git",
     "ssb-ref": "^2.11.1",
     "visualize-buffer": "0.0.1",
     "yargs": "^11.0.0"

@@ -79,6 +79,30 @@ var edit = function() {
   content.appendChild(editor)
 }
 
+var queryStream = function () {
+  var content = h('div.content')
+
+  var screen = document.getElementById('screen')
+
+  screen.appendChild(hyperscroll(content))
+
+  function createStream (opts) {
+    return pull(
+      //sbot.backlinks({query: [{$filter: { dest: id }}], reverse: true}),
+      sbot.query({query: [{$filter: { value: {content: {type: 'post'}, timestamp: { $gt: 1 }}}}], reverse: true}),
+      //sbot.query({query: [{$filter: { value: { content: {type: 'post'}, timestamp: { $gt: 0, $lt: undefined }}}}], reverse: true}),
+      pull.map(function (msg) {
+        return render(msg)
+      })
+    )
+  }
+
+  pull(
+    createStream({reverse: true, limit: 10}),
+    stream.bottom(content)
+  )  
+}
+
 var mentionsStream = function () {
   var content = h('div.content')
 
@@ -90,10 +114,10 @@ var mentionsStream = function () {
     return pull(
       sbot.backlinks({query: [{$filter: {dest: id}}], reverse: true}),
       pull.map(function (msg) {
-        if (msg.value.private == true) 
-          return 'ignoring private message'
-        else
-          return render(msg)
+        //if (msg.value.private == true) 
+        //  return 'ignoring private message'
+        //else
+        return render(msg)
       })
     )
   }
@@ -175,17 +199,26 @@ var userStream = function (src) {
     profile.firstChild.appendChild(avatars)
     profile.firstChild.appendChild(buttons)
 
-    if (localStorage['mute:' + src])
+    if (!localStorage[src])
+      var cache = {mute: false}
+    else
+      var cache = JSON.parse(localStorage[src])
+
+    console.log(cache)
+ 
+    if (cache.mute == true)
       var mute = h('button.btn', 'Unmute', {
         onclick: function () {
-          delete localStorage['mute:' + src]
+          cache.mute = false
+          localStorage[src] = JSON.stringify(cache)
           location.reload()
         }
       })
     else
       var mute = h('button.btn', 'Mute', {
         onclick: function () {
-          localStorage['mute:' + src] = true
+          cache.mute = true
+          localStorage[src] = JSON.stringify(cache)
           location.reload()
         }
       })
@@ -194,7 +227,45 @@ var userStream = function (src) {
 
 }
 
-var msgThread = function(src) {
+var msgThread = function (src) {
+
+  var content = h('div.content')
+  var screen = document.getElementById('screen')
+  screen.appendChild(hyperscroll(content))
+
+  pull(
+    sbot.query({query: [{$filter: { value: { content: {root: src}, timestamp: { $gt: 1 }}}}]}),
+    pull.drain(function (msg) {
+      console.log(msg)
+      content.appendChild(render(msg))
+    }) 
+  )
+
+  sbot.get(src, function (err, data) {
+    if (err) {console.log('could not find message')}
+    data.value = data
+    data.key = src
+    console.log(data)
+    var rootMsg = render(data)
+
+    if (content.firstChild) {
+      content.insertBefore(rootMsg, content.firstChild)
+    } else {
+      content.appendChild(rootMsg)
+    }
+  })
+
+  /*pull(
+    sbot.backlinks({query: [{$filter: {dest: src}}]}),
+    pull.drain(function (msg) {
+      console.log(msg)
+      content.appendChild(render(msg))
+    })
+  )*/
+
+}
+
+/*var msgThread = function(src) {
   var content = h('div.content')
   var screen = document.getElementById('screen')
   screen.appendChild(hyperscroll(content))
@@ -218,7 +289,7 @@ var msgThread = function(src) {
       )
     })
   })
-}
+}*/
 
 var keyPage = function () {
   var screen = document.getElementById('screen')
@@ -268,8 +339,10 @@ module.exports = function () {
     userStream(src)
   } else if (ref.isMsg(src)) {
     msgThread(src)
-  } else if (src == 'mentions') {
-    mentionsStream()
+  } else if (src == 'all') {
+    logStream()
+  } else if (src == 'posts'){
+    queryStream()
   } else if (src == 'about') {
     about()
   } else if (src == 'edit') {
@@ -277,6 +350,6 @@ module.exports = function () {
   } else if (src == 'key') {
     keyPage()
   } else {
-    logStream()
+    mentionsStream()
   }
 }
