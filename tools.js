@@ -25,7 +25,6 @@ module.exports.star = function (msg) {
         vote.vote.value = 1
         sbot.publish(vote, function (err, voted) {
           if(err) throw err
-          console.log('Starred!', voted)
         })
       }
     }
@@ -37,7 +36,6 @@ module.exports.star = function (msg) {
         vote.vote.value = -1
         sbot.publish(vote, function (err, voted) {
           if(err) throw err
-          console.log('Unstarred!', voted)
         })
       }
     }
@@ -48,12 +46,10 @@ module.exports.star = function (msg) {
   pull(
     sbot.links({rel: 'vote', dest: msg.key, live: true}),
     pull.drain(function (link) {
-      console.log(link)
       if (link.key) {
         sbot.get(link.key, function (err, data) {
           if (err) throw err
           if (data.author == id) {
-            console.log(data)
             if (data.content.vote.value == 1)
               votebutton.replaceChild(unstar, star)
             if (data.content.vote.value == -1)
@@ -133,10 +129,69 @@ module.exports.header = function (msg) {
   )
 }
 
-module.exports.messageLink = function (msglink) {
-  var link = h('span', h('a', {href: '#' + msglink}, msglink.substring(0, 8) + '...'))
+var ref = require('ssb-ref')
+
+module.exports.messageName = function (id, cb) {
+  // gets the first few characters of a message, for message-link
+  function title (s) {
+    var m = /^\n*([^\n]{0,40})/.exec(s)
+    return m && (m[1].length == 40 ? m[1]+'...' : m[1])
+  }
+
+  sbot.get(id, function (err, value) {
+    if(err && err.name == 'NotFoundError')
+      return cb(null, id.substring(0, 10)+'...(missing)')
+    if(value.content.type === 'post' && 'string' === typeof value.content.text)
+      return cb(null, title(value.content.text))
+    else if('string' === typeof value.content.text)
+      return cb(null, value.content.type + ':'+title(value.content.text))
+    else
+      return cb(null, id.substring(0, 10)+'...')
+  })
+}
+
+var messageName = exports.messageName
+var ref = require('ssb-ref')
+
+module.exports.messageLink = function (id) {
+  if (ref.isMsg(id)) {
+    var link = h('a', {href: '#'+id}, id.substring(0, 10)+'...')
+    messageName(id, function (err, name) {
+      if(err) console.error(err)
+      else link.textContent = name
+    })
+  } else {
+    var link = id
+  }
   return link
 }
+
+
+/*module.exports.messageLink = function (msglink) {
+  var link = h('span', h('a', {href: '#' + msglink}, msglink.substring(0, 44) + '...'))
+
+  if (ref.isMsg(msglink)) {
+    pull(
+      sbot.get(msglink, function (err, data) {
+        console.log(data)
+        if(err && err.name == 'NotFoundError') {
+          var newlink = h('span', h('a', {href: '#' + msglink},  msglink.substring(0, 35) + ' (Missing)...'))
+        }
+        if(data.content.type === 'post' && 'string' === typeof data.content.text) {
+          var newlink = h('span', h('a', {href: '#' + msglink}, data.content.text.substring(0, 44) + '...'))
+        } 
+        else {
+          var newlink = h('span', h('a', {href: '#' + msglink}, msglink.substring(0, 44) + '...'))
+        }
+        if (link) {
+          link.parentNode.replaceChild(newlink, link)
+        }
+      })
+    )
+  }
+
+  return link
+}*/
 
 module.exports.rawJSON = function (obj) {
   return JSON.stringify(obj, null, 2)
