@@ -250,18 +250,9 @@ function everythingStream () {
 
   screen.appendChild(hyperscroll(content))
 
-  function newStream () {
+  function createStream (opts) {
     return pull(
-      sbot.query({query: [{$filter: { value: { timestamp: { $gt: 0 }}}}], old: false, live: true}),
-      pull.map(function (msg) {
-        return render(msg) 
-      })
-    )
-  }
-
-  function oldStream () {
-    return pull(
-      sbot.query({query: [{$filter: { value: { timestamp: { $gt: 0 }}}}], reverse: true, live: false}),
+      More(sbot.query, opts, {query: [{$filter: { value: { timestamp: { $gt: 0 }}}}]}),
       pull.map(function (msg) {
         return render(msg)
       })
@@ -269,13 +260,13 @@ function everythingStream () {
   }
 
   pull(
-    oldStream(),
-    stream.bottom(content)
+    createStream({old: false, live: true, limit: 10}),
+    stream.top(content)
   )
 
   pull(
-    newStream(),
-    stream.top(content)
+    createStream({reverse: true, live: false, limit: 10}),
+    stream.bottom(content)
   )
 }
 
