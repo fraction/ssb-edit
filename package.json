@@ -23,6 +23,7 @@
     "hyperloadmore": "^1.1.0",
     "hyperscript": "^2.0.2",
     "hyperscroll": "^1.0.0",
+    "mfr-query-stream": "^2.0.1",
     "muxrpcli": "^1.1.0",
     "non-private-ip": "^1.4.3",
     "opn": "^5.3.0",

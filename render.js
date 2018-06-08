@@ -13,7 +13,12 @@ var id = require('./keys').id
 module.exports = function (msg) {
   var message = h('div.message#' + msg.key.substring(0, 44))
 
-  if (localStorage['mute:' + msg.value.author]) {
+  if (!localStorage[msg.value.author])
+    var cache = {mute: false}
+  else
+    var cache = JSON.parse(localStorage[msg.value.author])
+
+  if (cache.mute == true) {
     var muted = h('span', ' muted')
     message.appendChild(tools.mini(msg, muted))
     return message
@@ -99,8 +104,8 @@ module.exports = function (msg) {
       }))
 
 
-    var done = h('button.btn.right', '-')
-    var add = h('button.btn.right', '+')
+    var done = h('button.btn.right', '+')
+    var add = h('button.btn.right', '-')
 
     buttons.appendChild(done)
     buttons.appendChild(add) 
