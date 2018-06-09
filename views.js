@@ -186,7 +186,9 @@ var msgThread = function (src) {
   pull(
     sbot.query({query: [{$filter: { value: { content: {root: src}, timestamp: { $gt: 1 }}}}], live: true}),
     pull.drain(function (msg) {
-      content.appendChild(render(msg))
+      if (msg.value) {
+        content.appendChild(render(msg))
+      }
     }) 
   )
 
@@ -273,7 +275,9 @@ function everythingStream () {
     return pull(
       sbot.query({query: [{$filter: { value: { timestamp: { $gt: 0 }}}}], reverse: true}),
       pull.map(function (msg) {
-        return render(msg)
+        if (msg.value) {
+          return render(msg)
+        }
       })
     )
   }
