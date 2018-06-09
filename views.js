@@ -184,9 +184,8 @@ var msgThread = function (src) {
   screen.appendChild(hyperscroll(content))
 
   pull(
-    sbot.query({query: [{$filter: { value: { content: {root: src}, timestamp: { $gt: 1 }}}}]}),
+    sbot.query({query: [{$filter: { value: { content: {root: src}, timestamp: { $gt: 1 }}}}], live: true}),
     pull.drain(function (msg) {
-      console.log(msg)
       content.appendChild(render(msg))
     }) 
   )
