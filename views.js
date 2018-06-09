@@ -204,7 +204,6 @@ var msgThread = function (src) {
       content.appendChild(rootMsg)
     }
   })
-
 }
 
 var keyPage = function () {
@@ -243,16 +242,18 @@ var keyPage = function () {
   screen.appendChild(hyperscroll(content))
 }
 
+var nested = require('libnested')
+
 function everythingStream () {
-  var content = h('div.content')
 
   var screen = document.getElementById('screen')
+  var content = h('div.content')
 
   screen.appendChild(hyperscroll(content))
 
-  function createStream (opts) {
+  /*function createStream (opts) {
     return pull(
-      More(sbot.query, opts, {query: [{$filter: { value: { timestamp: { $gt: 0 }}}}]}),
+      More(sbot.query, opts, [{$filter: { value: { timestamp: { $gt: 0 }}}}]),
       pull.map(function (msg) {
         return render(msg)
       })
@@ -260,15 +261,35 @@ function everythingStream () {
   }
 
   pull(
-    createStream({old: false, live: true, limit: 10}),
+    createStream({ limit: 10, old: false}),
     stream.top(content)
   )
 
   pull(
-    createStream({reverse: true, live: false, limit: 10}),
+    createStream({limit: 10, live: false, reverse: true}),
+    stream.bottom(content)
+  )*/
+
+  function createStream (opts) {
+    return pull(
+      sbot.query({query: [{$filter: { value: { timestamp: { $gt: 0 }}}}], reverse: true}),
+      pull.map(function (msg) {
+        return render(msg)
+      })
+    )
+  }
+
+  /*pull(
+    createStream({old: false}),
+    stream.top(content)
+  )*/
+
+  pull(
+    createStream(),
     stream.bottom(content)
   )
 }
+
 
 function hash () {
   return window.location.hash.substring(1)
