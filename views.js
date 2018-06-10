@@ -7,6 +7,8 @@ var h = require('hyperscript')
 var render = require('./render')
 var ref = require('ssb-ref')
 
+var Next = require('pull-next-query')
+
 var config = require('./config')()
 
 var avatar = require('./avatar')
@@ -243,8 +245,6 @@ var keyPage = function () {
   screen.appendChild(hyperscroll(content))
 }
 
-var nested = require('libnested')
-
 function everythingStream () {
 
   var screen = document.getElementById('screen')
@@ -252,28 +252,9 @@ function everythingStream () {
 
   screen.appendChild(hyperscroll(content))
 
-  /*function createStream (opts) {
-    return pull(
-      More(sbot.query, opts, [{$filter: { value: { timestamp: { $gt: 0 }}}}]),
-      pull.map(function (msg) {
-        return render(msg)
-      })
-    )
-  }
-
-  pull(
-    createStream({ limit: 10, old: false}),
-    stream.top(content)
-  )
-
-  pull(
-    createStream({limit: 10, live: false, reverse: true}),
-    stream.bottom(content)
-  )*/
-
   function createStream (opts) {
     return pull(
-      sbot.query({query: [{$filter: { value: { timestamp: { $gt: 0 }}}}], reverse: true}),
+      Next(sbot.query, opts, ['value', 'timestamp']),
       pull.map(function (msg) {
         if (msg.value) {
           return render(msg)
@@ -282,14 +263,24 @@ function everythingStream () {
     )
   }
 
-  /*pull(
-    createStream({old: false}),
-    stream.top(content)
-  )*/
+  pull(
+    createStream({
+      limit: 10,
+      reverse: true,
+      live: false,
+      query: [{$filter: { value: { timestamp: { $gt: 0 }}}}]    
+    }),
+    stream.bottom(content)
+  )
 
   pull(
-    createStream(),
-    stream.bottom(content)
+    createStream({
+      limit: 10,
+      old: false,
+      live: true,
+      query: [{$filter: { value: { timestamp: { $gt: 0 }}}}]
+    }),
+    stream.top(content)
   )
 }
 

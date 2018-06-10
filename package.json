@@ -28,6 +28,7 @@
     "opn": "^5.3.0",
     "os-homedir": "^1.0.2",
     "pull-more": "^1.1.0",
+    "pull-next-query": "^1.0.0",
     "pull-reconnect": "0.0.3",
     "pull-stream": "^3.6.8",
     "pull-stringify": "^2.0.0",
