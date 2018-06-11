@@ -11,6 +11,7 @@ var Next = require('pull-next-query')
 
 var config = require('./config')()
 
+var tools = require('./tools')
 var avatar = require('./avatar')
 var id = require('./keys').id
 
@@ -28,59 +29,6 @@ var about = function () {
   screen.appendChild(hyperscroll(content))
 }
 
-var edit = function() {
-  var content = h('div.content')
-
-  var screen = document.getElementById('screen')
-
-  screen.appendChild(hyperscroll(content))
-
-  var nameInput = h('input', {placeholder: 'New name'})
-
-  var locInput = h('input', {placeholder: 'New location'})
-
-  var descInput = h('textarea', {placeholder: 'New description'})
-
-  var editor = h('div.message',
-    h('h1', 'Edit profile'),
-    nameInput,
-    h('button.btn.btn-primary', 'Preview', {onclick: function () {
-      if(nameInput.value) {
-        api.message_confirm({
-          type: 'about',
-          about: id,
-          name: nameInput.value || undefined
-        })
-      }
-    }}),
-    h('hr'),
-    locInput,
-    h('button.btn.btn-primary', 'Preview', {onclick: function () {
-      if(locInput.value) {
-        api.message_confirm({
-          type: 'loc',
-          about: id,
-          loc: locInput.value || undefined
-        })
-      }
-    }}),
-    h('hr'),
-    descInput,
-    h('button.btn.btn-primary', 'Preview', {onclick: function (){
-      if(descInput.value) {
-        api.message_confirm({
-          type: 'description',
-          about: id,
-          description: descInput.value || undefined
-        })
-      }
-    }}),
-    h('hr')
-  )
-
-  content.appendChild(editor)
-}
-
 var mentionsStream = function () {
   var content = h('div.content')
 
@@ -90,19 +38,31 @@ var mentionsStream = function () {
 
   function createStream (opts) {
     return pull(
-      sbot.backlinks({query: [{$filter: {dest: id}}], reverse: true}),
+      Next(sbot.backlinks, opts, ['value', 'timestamp']),
       pull.map(function (msg) {
-        //if (msg.value.private == true) 
-        //  return 'ignoring private message'
-        //else
         return render(msg)
       })
     )
   }
 
   pull(
-    createStream({reverse: true, limit: 10}),
+    createStream({
+      limit: 10,
+      reverse: true, 
+      live: false,
+      query: [{$filter: {dest: id}}]
+    }),
     stream.bottom(content)
+  )
+
+    pull(
+    createStream({
+      limit: 10,
+      old: false,
+      live: true,
+      query: [{$filter: {dest: id}}]
+    }),
+    stream.top(content)
   )
 }
 
@@ -138,45 +98,46 @@ var userStream = function (src) {
       screen.firstChild.appendChild(profile)
     }
 
+    var name = avatar.name(src)
+
     var avatars = h('div.avatars', 
       h('a', {href: '#' + src},
         h('span.avatar--medium', avatar.image(src)),
-        avatar.name(src)
+        name
       )
     )
 
     var buttons = h('div.buttons')
-
    
     profile.firstChild.appendChild(avatars)
     profile.firstChild.appendChild(buttons)
+    buttons.appendChild(tools.mute(src))
 
-    if (!localStorage[src])
-      var cache = {mute: false}
-    else
-      var cache = JSON.parse(localStorage[src])
+    console.log(name)
 
-    console.log(cache)
+    var writeMessage = h('button.btn', 'Public message ' + name.textContent, {
+      onclick: function () {
+        opts = {}
+        opts.type = 'post'
+        opts.mentions = '[' + name.textContent + '](' + src + ')'
+        var composer = h('div#composer', h('div.message', compose(opts)))
+        profile.appendChild(composer)
+      }
+    })
+
+    var writePrivate = h('button.btn', 'Private message ' + name.textContent, {
+      onclick: function () {
+        opts = {}
+        opts.type = 'post'
+        opts.mentions = '[' + name.textContent + '](' + src + ')'
+        opts.recps = [src, id]
+        var composer = h('div#composer', h('div.message', compose(opts)))
+        profile.appendChild(composer)
+      }
+    })
  
-    if (cache.mute == true)
-      var mute = h('button.btn', 'Unmute', {
-        onclick: function () {
-          cache.mute = false
-          localStorage[src] = JSON.stringify(cache)
-          location.reload()
-        }
-      })
-    else
-      var mute = h('button.btn', 'Mute', {
-        onclick: function () {
-          cache.mute = true
-          localStorage[src] = JSON.stringify(cache)
-          location.reload()
-        }
-      })
-    
-    buttons.appendChild(mute)
-
+    buttons.appendChild(writeMessage)
+    buttons.appendChild(writePrivate)
 }
 
 var msgThread = function (src) {
