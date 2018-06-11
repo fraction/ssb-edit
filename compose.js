@@ -3,6 +3,7 @@ var pull = require('pull-stream')
 var sbot = require('./scuttlebot')
 var human = require('human-time')
 var id = require('./keys').id
+var mentions = require('ssb-mentions')
 
 var tools = require('./tools')
 
@@ -44,7 +45,11 @@ module.exports = function (opts, fallback) {
   var composer = h('div.composer')
   var container = h('div.container')
 
-  if (opts.type == 'post')
+  if (opts.mentions) {
+    var textarea = h('textarea.compose', opts.mentions)
+  }
+
+  else if (opts.type == 'post')
     var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message'})
   else
     var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message'}, fallback.messageText) 
@@ -53,6 +58,7 @@ module.exports = function (opts, fallback) {
     onclick: function () {
       var cancel
       console.log(opts)
+
       if (opts.type == 'edit') {
         cancel = document.getElementById('edit:' + opts.branch.substring(0,44))
         var oldMessage = h('div.message__body', tools.markdown(fallback.messageText))
@@ -83,8 +89,22 @@ module.exports = function (opts, fallback) {
             "author": id,
             "content": opts
           }
-          
+           
           msg.value.content.text = textarea.value
+          msg.value.content.mentions = mentions(textarea.value).map(
+            function (mention) {
+              var file = filesById[mention.link]
+              if (file) {
+                if (file.type) mention.type = file.type
+                if (file.size) mention.size = file.size
+              }
+              return mention
+            }
+          )
+
+          if (opts.recps) 
+            msg.value.private = true
+
           console.log(msg)
           if (opts.type == 'post') 
             var header = tools.header(msg)
