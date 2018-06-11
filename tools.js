@@ -3,6 +3,8 @@ var human = require('human-time')
 var avatar = require('./avatar')
 var ref = require('ssb-ref')
 
+var ssbKeys = require('ssb-keys')
+
 var pull = require('pull-stream')
 
 var sbot = require('./scuttlebot')
@@ -10,6 +12,70 @@ var sbot = require('./scuttlebot')
 var config = require('./config')()
 
 var id = require('./keys').id
+
+module.exports.box = function (content) {
+  return ssbKeys.box(content, content.recps.map(function (e) {
+    return ref.isFeed(e) ? e : e.link
+  }))
+}
+
+module.exports.publish = function (content, cb) {
+  if(content.recps)
+    content = exports.box(content)
+  sbot.publish(content, function (err, msg) {
+    if(err) throw err
+    console.log('Published!', msg)
+    if(cb) cb(err, msg)
+  })
+}
+
+module.exports.done = function (src) {
+  var content = {
+    type: 'done',
+    vote: {'link': src}
+  }
+
+  var done = h('button.btn.right', 'Done ', h('img.emoji', {src: config.emojiUrl + 'v.png'}), {
+    onclick: function () {
+      content.done = true
+      content.mentions = [id]
+      content.recps = [id]
+      exports.publish(content, function (err, published) {
+        if (err) throw err
+      })
+    }
+  })
+
+  return done
+  
+}
+
+module.exports.mute = function (src) {
+  if (!localStorage[src])
+    var cache = {mute: false}
+  else
+    var cache = JSON.parse(localStorage[src])
+
+  if (cache.mute == true) {
+    var mute = h('button.btn', 'Unmute', {
+      onclick: function () {
+        cache.mute = false
+        localStorage[src] = JSON.stringify(cache)
+        location.reload()
+      }
+    })
+    return mute
+  } else {
+    var mute = h('button.btn', 'Mute', {
+      onclick: function () {
+        cache.mute = true
+        localStorage[src] = JSON.stringify(cache)
+        location.reload()
+      }
+    })
+    return mute
+  }
+}
 
 module.exports.star = function (msg) {
   var votebutton = h('span.star:' + msg.key.substring(0,44))
@@ -49,11 +115,13 @@ module.exports.star = function (msg) {
       if (link.key) {
         sbot.get(link.key, function (err, data) {
           if (err) throw err
-          if (data.author == id) {
-            if (data.content.vote.value == 1)
-              votebutton.replaceChild(unstar, star)
-            if (data.content.vote.value == -1)
-              votebutton.replaceChild(star, unstar)
+          if (data.content.vote) {
+            if (data.author == id) {
+              if (data.content.vote.value == 1)
+                votebutton.replaceChild(unstar, star)
+              if (data.content.vote.value == -1)
+                votebutton.replaceChild(star, unstar)
+            }
           }
         })
       }
@@ -72,17 +140,21 @@ function votes (msg) {
         if (link.key) {
           sbot.get(link.key, function (err, data) {
             if (err) throw err
-            if (data.content.vote.value == 1) {
-              if (localStorage[data.author + 'name'])
-                name = localStorage[data.author + 'name']
-              else
-                name = data.author
-              votes.appendChild(h('a#vote:' + data.author.substring(0, 44), {href:'#' + data.author, title: name}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
-            }
-            else if (data.content.vote.value == -1) {
-              var lookFor = 'vote:' + data.author.substring(0, 44)
-              var remove = document.getElementById(lookFor)
-              remove.parentNode.removeChild(remove)
+            if (data.content.vote) {
+              if (data.content.vote.value == 1) {
+                if (localStorage[data.author + 'name'])
+                  name = localStorage[data.author + 'name']
+                else
+                  name = data.author
+                votes.appendChild(h('a#vote:' + data.author.substring(0, 44), {href:'#' + data.author, title: name}, h('img.emoji', {src: config.emojiUrl + 'star.png'})))
+              }
+              else if (data.content.vote.value == -1) {
+                var lookFor = 'vote:' + data.author.substring(0, 44)
+                document.getElementById(lookFor, function (err, gotit) {
+                  if (err) throw err
+                  gotit.parentNode.removeChild(remove)
+                })
+              }
             }
           })
         }
@@ -117,16 +189,23 @@ module.exports.mini = function (msg, content) {
 
 
 module.exports.header = function (msg) {
-  return h('div.header',
-    h('span.avatar',
+  var header = h('div.header')
+
+  header.appendChild(h('span.avatar',
       h('a', {href: '#' + msg.value.author},
         h('span.avatar--small', avatar.image(msg.value.author)),
         avatar.name(msg.value.author)
       )
-    ),
-    exports.timestamp(msg),
-    votes(msg)
+    )
   )
+    
+  header.appendChild(exports.timestamp(msg))
+  header.appendChild(votes(msg))
+
+  if (msg.value.private)
+    header.appendChild(h('span.right', ' ', h('img.emoji', {src: config.emojiUrl + 'lock.png'})))
+
+  return header
 }
 
 var ref = require('ssb-ref')
