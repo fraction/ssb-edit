@@ -9,6 +9,7 @@ var tools = require('./tools')
 var config = require('./config')()
 var id = require('./keys').id
 
+var avatar = require('./avatar')
 
 module.exports = function (msg) {
   var message = h('div.message#' + msg.key.substring(0, 44))
@@ -24,9 +25,46 @@ module.exports = function (msg) {
     return message
   } 
 
-  if (msg.value.private == true) {
+  /*if (msg.value.private == true) {
     var privateMsg = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'lock.png'}), ' ', h('button.btn', 'Open'))
     message.appendChild(tools.mini(msg, privateMsg))
+    return message  
+  }*/
+  else if (msg.value.content.type == 'git-update') {
+
+    message.appendChild(tools.header(msg))
+
+    var reponame = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, msg.value.content.repo))
+
+    var cloneurl = h('pre', 'git clone ssb://' + msg.value.content.repo)
+
+    message.appendChild(reponame)
+
+    pull(
+      sbot.get(msg.value.content.repo, function (err, data) {
+        if (err) throw err
+        console.log(data)
+        if (data.content.name) {
+          actualname = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, '%' + data.content.name))
+          reponame.parentNode.replaceChild(actualname, reponame)
+        }
+      })
+    )
+    message.appendChild(cloneurl)
+    //message.appendChild(h('pre', tools.rawJSON(msg.value)))
+    return message 
+ 
+  }
+  else if (msg.value.content.type == 'git-repo') {
+    message.appendChild(tools.header(msg))
+    if (msg.value.content.name) {
+      message.appendChild(h('p', h('a', {href: msg.link}, '%' + msg.value.content.name)))
+    } else {
+      message.appendChild(h('p', h('a', {href: msg.link}, msg.link)))
+    }
+    var cloneurl = h('pre', 'git clone ssb://' + msg.key)
+    message.appendChild(cloneurl)
+    //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
     return message  
   }
 
@@ -73,6 +111,10 @@ module.exports = function (msg) {
     buttons.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
         opts.type = 'post'
+        opts.mentions = '[' + avatar.name(msg.value.author).textContent + '](' + msg.value.author + ')'
+        if (msg.value.content.recps) {
+          opts.recps = msg.value.content.recps
+        }
         var r = message.childNodes.length - 1
         delete opts.updated
         delete opts.original 
@@ -103,12 +145,8 @@ module.exports = function (msg) {
         }
       }))
 
+    buttons.appendChild(tools.done(msg.key))
 
-    var done = h('button.btn.right', '+')
-    var add = h('button.btn.right', '-')
-
-    buttons.appendChild(done)
-    buttons.appendChild(add) 
     buttons.appendChild(tools.star(msg))
     message.appendChild(buttons)
     return message
@@ -127,13 +165,12 @@ module.exports = function (msg) {
   } else {
 
     //FULL FALLBACK
-    //message.appendChild(tools.header(msg))
-    //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
-    //return message
+    message.appendChild(tools.header(msg))
+    message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
 
     //MINI FALLBACK
-    var fallback = h('span', ' ' + msg.value.content.type)
-    message.appendChild(tools.mini(msg, fallback))
+    //var fallback = h('span', ' ' + msg.value.content.type)
+    //message.appendChild(tools.mini(msg, fallback))
     return message 
   }
 }
