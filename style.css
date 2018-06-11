@@ -43,6 +43,16 @@ p {
   margin-bottom: 10px;
 }
 
+/*a {
+  color: #00aaff;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: #0088cc;
+  text-decoration: underline;
+}*/
 
 a {
   color: white;
@@ -227,6 +237,22 @@ white-space: -moz-pre-wrap;
 white-space: pre-wrap;
 white-space: pre\9;
 }
+
+code, pre {
+  font-size: 12px;
+  color: #ccc;
+}
+
+code {
+  color: #ccc;
+}
+
+pre {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
 
 
 .btn {
