@@ -113,8 +113,6 @@ var userStream = function (src) {
     profile.firstChild.appendChild(buttons)
     buttons.appendChild(tools.mute(src))
 
-    console.log(name)
-
     var writeMessage = h('button.btn', 'Public message ' + name.textContent, {
       onclick: function () {
         opts = {}
@@ -138,6 +136,11 @@ var userStream = function (src) {
  
     buttons.appendChild(writeMessage)
     buttons.appendChild(writePrivate)
+    buttons.appendChild(tools.follow(src))
+    
+    profile.firstChild.appendChild(tools.getFollowing(src))
+    profile.firstChild.appendChild(tools.getFollowers(src))
+
 }
 
 var msgThread = function (src) {

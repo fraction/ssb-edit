@@ -13,6 +13,137 @@ var config = require('./config')()
 
 var id = require('./keys').id
 
+module.exports.getFollowing = function (src) {
+  var followingCount = 0
+
+  var following = h('div.following', 'Following: ')
+
+  following.appendChild(h('span#followingcount', '0'))
+  following.appendChild(h('br'))
+
+  pull(
+    sbot.query({query: [{$filter: { value: { author: src, content: {type: 'contact'}}}}], live: true}),
+    pull.drain(function (msg) {
+      if (msg.value) {
+        if (msg.value.content.following == true) {
+          followingcount = document.getElementById('followingcount')
+          followingCount++
+          followingcount.textContent = followingCount
+          var gotIt = document.getElementById('following:' + msg.value.content.contact.substring(0, 44))
+          if (gotIt == null) {
+            following.appendChild(h('a#following:'+ msg.value.content.contact.substring(0, 44), {href: '#' + msg.value.content.contact}, h('span.avatar--small', avatar.image(msg.value.content.contact))))
+          }
+        }
+        if (msg.value.content.following == false) {
+          followingcount = document.getElementById('followingcount')
+          followingCount--
+          followingcount.textContent = followingCount
+          var gotIt = document.getElementById('following:' + msg.value.content.contact.substring(0, 44))
+          console.log(gotIt)
+          if (gotIt != null) {
+            console.log('removing' + gotIt)
+            gotIt.outerHTML = ''
+          }
+        }
+      }
+    })
+  )
+
+  return following
+
+}
+
+module.exports.getFollowers = function (src) {
+  var followerCount = 0
+
+  var followers = h('div.followers', 'Followers: ')
+
+  followers.appendChild(h('span#followercount', '0'))
+  followers.appendChild(h('br'))
+
+  pull(
+    sbot.query({query: [{$filter: { value: { content: {type: 'contact', contact: src}}}}], live: true}),
+    pull.drain(function (msg) {
+      if (msg.value) {
+        if (msg.value.content.following == true) {
+          followcount = document.getElementById('followercount')
+          followerCount++
+          followcount.textContent = followerCount
+          var gotIt = document.getElementById('followers:' + msg.value.author.substring(0, 44))
+          if (gotIt == null) {
+            followers.appendChild(h('a#followers:'+ msg.value.author.substring(0, 44), {href: '#' + msg.value.author}, h('span.avatar--small', avatar.image(msg.value.author))))
+          }
+        }
+        if (msg.value.content.following == false) {
+          followcount = document.getElementById('followercount')
+          followerCount--
+          followcount.textContent = followerCount
+          var gotIt = document.getElementById('followers:' + msg.value.author.substring(0, 44))
+          console.log(gotIt)
+          if (gotIt != null) {
+            console.log('removing' + gotIt)
+            gotIt.outerHTML = ''
+          }
+        }
+      }
+    })
+  )
+
+  return followers
+}
+
+module.exports.follow = function (src) {
+   var button = h('span.button')
+
+   var followButton = h('button.btn', 'Follow ' + avatar.name(src).textContent, {
+    onclick: function () {
+      var content = {
+        type: 'contact', 
+        contact: src, 
+        following: true
+      }
+      sbot.publish(content, function (err, publish) {
+        if (err) throw err
+        console.log(publish)
+      }) 
+    }
+  })
+
+  var unfollowButton = h('button.btn', 'Unfollow ' + avatar.name(src).textContent, {
+    onclick: function () {
+      var content = {
+        type: 'contact', 
+        contact: src, 
+        following: false
+      }
+      sbot.publish(content, function (err, publish) {
+        if (err) throw err
+        console.log(publish)
+      }) 
+    }
+  })
+
+  pull(
+    sbot.query({query: [{$filter: { value: { author: id, content: {type: 'contact', contact: src}}}}], live: true}),
+    pull.drain(function (msg) { 
+      if (msg.value) {
+        if (msg.value.content.following == true) {
+            button.removeChild(button.firstChild)
+            button.appendChild(unfollowButton) 
+          } 
+        if (msg.value.content.following == false) {
+          button.removeChild(button.firstChild)
+          button.appendChild(followButton) 
+        }
+      }
+    })
+  )
+
+  button.appendChild(followButton)
+
+  return button
+}
+
 module.exports.box = function (content) {
   return ssbKeys.box(content, content.recps.map(function (e) {
     return ref.isFeed(e) ? e : e.link
@@ -27,27 +158,6 @@ module.exports.publish = function (content, cb) {
     console.log('Published!', msg)
     if(cb) cb(err, msg)
   })
-}
-
-module.exports.done = function (src) {
-  var content = {
-    type: 'done',
-    vote: {'link': src}
-  }
-
-  var done = h('button.btn.right', 'Done ', h('img.emoji', {src: config.emojiUrl + 'v.png'}), {
-    onclick: function () {
-      content.done = true
-      content.mentions = [id]
-      content.recps = [id]
-      exports.publish(content, function (err, published) {
-        if (err) throw err
-      })
-    }
-  })
-
-  return done
-  
 }
 
 module.exports.mute = function (src) {

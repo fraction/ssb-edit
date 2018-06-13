@@ -43,7 +43,6 @@ module.exports = function (msg) {
     pull(
       sbot.get(msg.value.content.repo, function (err, data) {
         if (err) throw err
-        console.log(data)
         if (data.content.name) {
           actualname = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, '%' + data.content.name))
           reponame.parentNode.replaceChild(actualname, reponame)
@@ -92,7 +91,6 @@ module.exports = function (msg) {
       sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}], limit: 100, live: true}),
       pull.drain(function (update) {
         if (update.sync) { 
-          //console.log('Waiting for new edits.')
         } else {
           var newMessage = h('div', tools.markdown(update.value.content.text))
           var latest = h('div.message__body', 
@@ -144,8 +142,6 @@ module.exports = function (msg) {
           message.replaceChild(compose, message.lastElementChild)
         }
       }))
-
-    buttons.appendChild(tools.done(msg.key))
 
     buttons.appendChild(tools.star(msg))
     message.appendChild(buttons)
