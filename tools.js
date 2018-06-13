@@ -31,7 +31,7 @@ module.exports.getFollowing = function (src) {
           followingcount.textContent = followingCount
           var gotIt = document.getElementById('following:' + msg.value.content.contact.substring(0, 44))
           if (gotIt == null) {
-            following.appendChild(h('a#following:'+ msg.value.content.contact.substring(0, 44), {href: '#' + msg.value.content.contact}, h('span.avatar--small', avatar.image(msg.value.content.contact))))
+            following.appendChild(h('a#following:'+ msg.value.content.contact.substring(0, 44), {title: avatar.name(msg.value.content.contact).textContent, href: '#' + msg.value.content.contact}, h('span.avatar--small', avatar.image(msg.value.content.contact))))
           }
         }
         if (msg.value.content.following == false) {
@@ -71,7 +71,7 @@ module.exports.getFollowers = function (src) {
           followcount.textContent = followerCount
           var gotIt = document.getElementById('followers:' + msg.value.author.substring(0, 44))
           if (gotIt == null) {
-            followers.appendChild(h('a#followers:'+ msg.value.author.substring(0, 44), {href: '#' + msg.value.author}, h('span.avatar--small', avatar.image(msg.value.author))))
+            followers.appendChild(h('a#followers:'+ msg.value.author.substring(0, 44), {title: avatar.name(msg.value.author).textContent, href: '#' + msg.value.author}, h('span.avatar--small', avatar.image(msg.value.author))))
           }
         }
         if (msg.value.content.following == false) {
