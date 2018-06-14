@@ -30,6 +30,20 @@ module.exports = function (msg) {
     message.appendChild(tools.mini(msg, privateMsg))
     return message  
   }*/
+  else if (msg.value.content.type == 'contact') {
+    console.log(msg)
+    if (msg.value.content.following == true) {
+      var following = h('span', ' follows ', h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact)))
+      message.appendChild(tools.mini(msg, following))
+    } 
+
+    if (msg.value.content.following == false) {
+      var unfollowing = h('span', ' unfollows ', h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact)))
+      message.appendChild(tools.mini(msg, unfollowing))
+    }
+    return message
+  }
+  
   else if (msg.value.content.type == 'git-update') {
 
     message.appendChild(tools.header(msg))
