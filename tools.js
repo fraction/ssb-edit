@@ -39,9 +39,7 @@ module.exports.getFollowing = function (src) {
           followingCount--
           followingcount.textContent = followingCount
           var gotIt = document.getElementById('following:' + msg.value.content.contact.substring(0, 44))
-          console.log(gotIt)
           if (gotIt != null) {
-            console.log('removing' + gotIt)
             gotIt.outerHTML = ''
           }
         }
@@ -79,9 +77,7 @@ module.exports.getFollowers = function (src) {
           followerCount--
           followcount.textContent = followerCount
           var gotIt = document.getElementById('followers:' + msg.value.author.substring(0, 44))
-          console.log(gotIt)
           if (gotIt != null) {
-            console.log('removing' + gotIt)
             gotIt.outerHTML = ''
           }
         }
