@@ -14,76 +14,42 @@ var config = require('./config')()
 var id = require('./keys').id
 
 module.exports.getFollowing = function (src) {
-  var followingCount = 0
+  var count = 0
 
-  var following = h('div.following', 'Following: ')
+  var following = h('div.following')
 
-  following.appendChild(h('span#followingcount', '0'))
+  following.appendChild(h('span', 'Following: ' + count))
   following.appendChild(h('br'))
 
-  pull(
-    sbot.query({query: [{$filter: { value: { author: src, content: {type: 'contact'}}}}], live: true}),
-    pull.drain(function (msg) {
-      if (msg.value) {
-        if (msg.value.content.following == true) {
-          followingcount = document.getElementById('followingcount')
-          followingCount++
-          followingcount.textContent = followingCount
-          var gotIt = document.getElementById('following:' + msg.value.content.contact.substring(0, 44))
-          if (gotIt == null) {
-            following.appendChild(h('a#following:'+ msg.value.content.contact.substring(0, 44), {title: avatar.name(msg.value.content.contact).textContent, href: '#' + msg.value.content.contact}, h('span.avatar--small', avatar.image(msg.value.content.contact))))
-          }
-        }
-        if (msg.value.content.following == false) {
-          followingcount = document.getElementById('followingcount')
-          followingCount--
-          followingcount.textContent = followingCount
-          var gotIt = document.getElementById('following:' + msg.value.content.contact.substring(0, 44))
-          if (gotIt != null) {
-            gotIt.outerHTML = ''
-          }
-        }
-      }
-    })
-  )
+  sbot.friends.get({source: src}, function (err, follows) {
+    for (var i in follows) {
+      //this needs to iterative over each object within follows and only print if TRUE
+      following.appendChild(h('a', {title: avatar.name(i).textContent, href: '#' + i}, h('span.avatar--small', avatar.image(i))))
+      count++
+      following.firstChild.textContent = 'Following: ' + count 
+    }
+  })
 
   return following
 
 }
 
 module.exports.getFollowers = function (src) {
-  var followerCount = 0
+  var count = 0
 
-  var followers = h('div.followers', 'Followers: ')
+  var followers = h('div.followers')
 
-  followers.appendChild(h('span#followercount', '0'))
+  followers.appendChild(h('span', 'Followers: ' + count))
   followers.appendChild(h('br'))
 
-  pull(
-    sbot.query({query: [{$filter: { value: { content: {type: 'contact', contact: src}}}}], live: true}),
-    pull.drain(function (msg) {
-      if (msg.value) {
-        if (msg.value.content.following == true) {
-          followcount = document.getElementById('followercount')
-          followerCount++
-          followcount.textContent = followerCount
-          var gotIt = document.getElementById('followers:' + msg.value.author.substring(0, 44))
-          if (gotIt == null) {
-            followers.appendChild(h('a#followers:'+ msg.value.author.substring(0, 44), {title: avatar.name(msg.value.author).textContent, href: '#' + msg.value.author}, h('span.avatar--small', avatar.image(msg.value.author))))
-          }
-        }
-        if (msg.value.content.following == false) {
-          followcount = document.getElementById('followercount')
-          followerCount--
-          followcount.textContent = followerCount
-          var gotIt = document.getElementById('followers:' + msg.value.author.substring(0, 44))
-          if (gotIt != null) {
-            gotIt.outerHTML = ''
-          }
-        }
-      }
-    })
-  )
+  sbot.friends.get({dest: src}, function (err, follows) {
+    for (var i in follows) {
+      followers.appendChild(h('a', {title: avatar.name(i).textContent, href: '#' + i}, h('span.avatar--small', avatar.image(i))))
+      count++
+      followers.firstChild.textContent = 'Followers: ' + count
+    }
+  })
+
 
   return followers
 }

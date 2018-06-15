@@ -19,6 +19,7 @@
   "dependencies": {
     "decent-ws": "^1.0.1",
     "deep-extend": "^0.5.1",
+    "emoji-server": "^1.0.0",
     "human-time": "0.0.1",
     "hyperloadmore": "^1.1.0",
     "hyperscript": "^2.0.2",
@@ -47,6 +48,7 @@
     "ssb-links": "^3.0.3",
     "ssb-markdown": "^3.6.0",
     "ssb-mentions": "^0.5.0",
+    "ssb-names": "^3.1.2",
     "ssb-ooo": "^1.0.9",
     "ssb-query": "git+https://git@github.com/evbogue/ssb-query.git",
     "ssb-ref": "^2.11.1",

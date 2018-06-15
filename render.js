@@ -31,7 +31,6 @@ module.exports = function (msg) {
     return message  
   }*/
   else if (msg.value.content.type == 'contact') {
-    console.log(msg)
     if (msg.value.content.following == true) {
       var following = h('span', ' follows ', h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact)))
       message.appendChild(tools.mini(msg, following))
