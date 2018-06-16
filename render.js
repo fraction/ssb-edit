@@ -118,11 +118,13 @@ module.exports = function (msg) {
       })    
     )
 
+    var name = avatar.name(msg.value.author)
+
     var buttons = h('div.buttons')
     buttons.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
         opts.type = 'post'
-        opts.mentions = '[' + avatar.name(msg.value.author).textContent + '](' + msg.value.author + ')'
+        opts.mentions = '[' + name.textContent + '](' + msg.value.author + ')'
         if (msg.value.content.recps) {
           opts.recps = msg.value.content.recps
         }
