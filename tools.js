@@ -133,7 +133,8 @@ module.exports.mute = function (src) {
       onclick: function () {
         cache.mute = false
         localStorage[src] = JSON.stringify(cache)
-        location.reload()
+        location.hash = '#'
+        location.hash = src
       }
     })
     return mute
@@ -142,7 +143,8 @@ module.exports.mute = function (src) {
       onclick: function () {
         cache.mute = true
         localStorage[src] = JSON.stringify(cache)
-        location.reload()
+        location.hash = '#'
+        location.hash = src 
       }
     })
     return mute
