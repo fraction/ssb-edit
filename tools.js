@@ -23,10 +23,12 @@ module.exports.getFollowing = function (src) {
 
   sbot.friends.get({source: src}, function (err, follows) {
     for (var i in follows) {
-      //this needs to iterative over each object within follows and only print if TRUE
-      following.appendChild(h('a', {title: avatar.name(i).textContent, href: '#' + i}, h('span.avatar--small', avatar.image(i))))
-      count++
-      following.firstChild.textContent = 'Following: ' + count 
+      if (follows.hasOwnProperty(i)) {
+        if (follows[i] == true)
+        following.appendChild(h('a', {title: avatar.name(i).textContent, href: '#' + i}, h('span.avatar--small', avatar.image(i))))
+        count++
+        following.firstChild.textContent = 'Following: ' + count 
+      }
     }
   })
 
@@ -44,9 +46,13 @@ module.exports.getFollowers = function (src) {
 
   sbot.friends.get({dest: src}, function (err, follows) {
     for (var i in follows) {
-      followers.appendChild(h('a', {title: avatar.name(i).textContent, href: '#' + i}, h('span.avatar--small', avatar.image(i))))
-      count++
-      followers.firstChild.textContent = 'Followers: ' + count
+      if (follows.hasOwnProperty(i)) {
+        if (follows[i] == true) {
+          followers.appendChild(h('a', {title: avatar.name(i).textContent, href: '#' + i}, h('span.avatar--small', avatar.image(i))))
+          count++
+          followers.firstChild.textContent = 'Followers: ' + count
+        }
+      }
     }
   })
 
