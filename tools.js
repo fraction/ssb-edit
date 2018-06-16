@@ -14,7 +14,40 @@ var config = require('./config')()
 var id = require('./keys').id
 
 module.exports.getFollowing = function (src) {
-  var count = 0
+  var followingCount = 0
+
+  var following = h('div.following', 'Following: ')
+
+  following.appendChild(h('span#followingcount', '0'))
+  following.appendChild(h('br'))
+
+  pull(
+    sbot.query({query: [{$filter: { value: { author: src, content: {type: 'contact'}}}}], live: true}),
+    pull.drain(function (msg) {
+      if (msg.value) {
+        if (msg.value.content.following == true) {
+          followingcount = document.getElementById('followingcount')
+          followingCount++
+          followingcount.textContent = followingCount
+          var gotIt = document.getElementById('following:' + msg.value.content.contact.substring(0, 44))
+          if (gotIt == null) {
+            following.appendChild(h('a#following:'+ msg.value.content.contact.substring(0, 44), {title: avatar.name(msg.value.content.contact).textContent, href: '#' + msg.value.content.contact}, h('span.avatar--small', avatar.image(msg.value.content.contact))))
+          }
+        }
+        if (msg.value.content.following == false) {
+          followingcount = document.getElementById('followingcount')
+          followingCount--
+          followingcount.textContent = followingCount
+          var gotIt = document.getElementById('following:' + msg.value.content.contact.substring(0, 44))
+          if (gotIt != null) {
+            gotIt.outerHTML = ''
+          }
+        }
+      }
+    })
+  )
+  return following
+/*  var count = 0
 
   var following = h('div.following')
 
@@ -33,11 +66,47 @@ module.exports.getFollowing = function (src) {
   })
 
   return following
-
+*/
 }
 
 module.exports.getFollowers = function (src) {
-  var count = 0
+  var followerCount = 0
+
+  var followers = h('div.followers', 'Followers: ')
+
+  followers.appendChild(h('span#followercount', '0'))
+  followers.appendChild(h('br'))
+
+  pull(
+    sbot.query({query: [{$filter: { value: { content: {type: 'contact', contact: src}}}}], live: true}),
+    pull.drain(function (msg) {
+      if (msg.value) {
+        if (msg.value.content.following == true) {
+          followcount = document.getElementById('followercount')
+          followerCount++
+          followcount.textContent = followerCount
+          var gotIt = document.getElementById('followers:' + msg.value.author.substring(0, 44))
+          if (gotIt == null) {
+            followers.appendChild(h('a#followers:'+ msg.value.author.substring(0, 44), {title: avatar.name(msg.value.author).textContent, href: '#' + msg.value.author}, h('span.avatar--small', avatar.image(msg.value.author))))
+          }
+        }
+        if (msg.value.content.following == false) {
+          followcount = document.getElementById('followercount')
+          followerCount--
+          followcount.textContent = followerCount
+          var gotIt = document.getElementById('followers:' + msg.value.author.substring(0, 44))
+          if (gotIt != null) {
+            gotIt.outerHTML = ''
+          }
+        }
+      }
+    })
+  )
+
+  return followers
+
+
+  /*var count = 0
 
   var followers = h('div.followers')
 
@@ -57,13 +126,13 @@ module.exports.getFollowers = function (src) {
   })
 
 
-  return followers
+  return followers*/
 }
 
 module.exports.follow = function (src) {
    var button = h('span.button')
 
-   var followButton = h('button.btn', 'Follow ' + avatar.name(src).textContent, {
+   var followButton = h('button.btn', 'Follow ', avatar.name(src), {
     onclick: function () {
       var content = {
         type: 'contact', 
@@ -77,7 +146,7 @@ module.exports.follow = function (src) {
     }
   })
 
-  var unfollowButton = h('button.btn', 'Unfollow ' + avatar.name(src).textContent, {
+  var unfollowButton = h('button.btn', 'Unfollow ', avatar.name(src), {
     onclick: function () {
       var content = {
         type: 'contact', 
