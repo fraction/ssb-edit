@@ -46,6 +46,9 @@ var internal = {
 var feed = createFeed(internal, keys, {remote: true})
 
 module.exports = {
+  acceptInvite: rec.async(function (invite, cb) {
+    sbot.invite.accept(invite, cb)
+  }),
   createLogStream: rec.source(function (opts) {
     return pull(
       sbot.createLogStream(opts),
