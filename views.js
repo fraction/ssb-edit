@@ -98,14 +98,14 @@ var userStream = function (src) {
       screen.firstChild.appendChild(profile)
     }
 
-    var name = avatar.name(src)
-
     var avatars = h('div.avatars', 
       h('a', {href: '#' + src},
         h('span.avatar--medium', avatar.image(src)),
-        name
+        avatar.name(src)
       )
     )
+
+    var name = avatar.name(src)
 
     var buttons = h('div.buttons')
    
@@ -113,7 +113,7 @@ var userStream = function (src) {
     profile.firstChild.appendChild(buttons)
     buttons.appendChild(tools.mute(src))
 
-    var writeMessage = h('button.btn', 'Public message ' + name.textContent, {
+    var writeMessage = h('button.btn', 'Public message ', avatar.name(src), {
       onclick: function () {
         opts = {}
         opts.type = 'post'
@@ -123,7 +123,7 @@ var userStream = function (src) {
       }
     })
 
-    var writePrivate = h('button.btn', 'Private message ' + name.textContent, {
+    var writePrivate = h('button.btn', 'Private message ', avatar.name(src), {
       onclick: function () {
         opts = {}
         opts.type = 'post'
@@ -140,7 +140,6 @@ var userStream = function (src) {
     
     profile.firstChild.appendChild(tools.getFollowing(src))
     profile.firstChild.appendChild(tools.getFollowers(src))
-
 }
 
 var msgThread = function (src) {
