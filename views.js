@@ -1,4 +1,5 @@
 var pull = require('pull-stream')
+var human = require('human-time')
 var sbot = require('./scuttlebot')
 var hyperscroll = require('hyperscroll')
 var More = require('pull-more')
@@ -89,7 +90,6 @@ var userStream = function (src) {
       stream.bottom(content)
     )
 
-
     var profile = h('div.content#profile', h('div.message'))
 
     if (screen.firstChild.firstChild) {
@@ -103,6 +103,15 @@ var userStream = function (src) {
         h('span.avatar--medium', avatar.image(src)),
         avatar.name(src)
       )
+    )
+    
+    pull(
+      sbot.userStream({id: src, reverse: false, limit: 1}),
+      pull.drain(function (msg) { 
+        var howlong = h('span', ' arrived ', human(new Date(msg.value.timestamp)))
+        avatars.appendChild(howlong)
+        console.log(msg)
+      })
     )
 
     var name = avatar.name(src)
