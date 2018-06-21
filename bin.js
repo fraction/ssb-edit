@@ -11,7 +11,7 @@ var yargs = require('yargs').argv
 var SEC = 1e3
 var MIN = 60*SEC
 
-var config = require('./config/inject')(yargs.appname || 'decent')
+var config = require('./config/inject')(yargs.appname || 'ssb')
 
 config.keys = ssbKeys.loadOrCreateSync(path.join(config.path, 'secret'))
 
