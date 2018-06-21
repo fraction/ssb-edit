@@ -170,7 +170,7 @@ module.exports = function (msg) {
     message.appendChild(tools.mini(msg, link))
     return message
   } else if (typeof msg.value.content === 'string') {
-    var privateMsg = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'lock.png'}))
+    var privateMsg = h('span', ' sent a private message.')
     message.appendChild(tools.mini(msg, privateMsg))
     return message
   } else {

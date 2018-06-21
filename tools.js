@@ -233,11 +233,18 @@ module.exports.star = function (msg) {
     type: 'vote',
     vote: { link: msg.key, expression: 'Star' }
   }
+  console.log(msg)
+  if (msg.value.content.recps) {
+    vote.recps = msg.value.content.recps
+  }
 
   var star = h('button.btn.right', 'Star ',
     h('img.emoji', {src: config.emojiUrl + 'star.png'}), {
       onclick: function () {
         vote.vote.value = 1
+        if (vote.recps) {
+          vote = exports.box(vote)
+        }
         sbot.publish(vote, function (err, voted) {
           if(err) throw err
         })
@@ -324,16 +331,31 @@ module.exports.timestamp = function (msg, edited) {
 
 
 module.exports.mini = function (msg, content) {
-  return h('div.mini',
+  var mini = h('div.mini')
+
+  mini.appendChild(
     h('span.avatar',
       h('a', {href: '#' + msg.value.author},
         h('span.avatar--small', avatar.image(msg.value.author)),
         avatar.name(msg.value.author)
       )
-    ),
-    exports.timestamp(msg),
-    content
+    )
   )
+  var lock = h('span.right', h('img.emoji', {src: config.emojiUrl + 'lock.png'}))
+
+
+  mini.appendChild(content)
+  mini.appendChild(exports.timestamp(msg))
+
+  if (msg.value.content.recps) {
+    mini.appendChild(lock)
+  }
+
+  if (typeof msg.value.content === 'string') {
+    mini.appendChild(lock)
+  }
+
+  return mini
 }
 
 
