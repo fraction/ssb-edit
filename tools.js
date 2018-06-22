@@ -344,7 +344,7 @@ module.exports.mini = function (msg, content) {
   var lock = h('span.right', h('img.emoji', {src: config.emojiUrl + 'lock.png'}))
 
 
-  mini.appendChild(content)
+  mini.appendChild(h('span', content))
   mini.appendChild(exports.timestamp(msg))
 
   if (msg.value.content.recps) {
