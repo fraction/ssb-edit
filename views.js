@@ -30,7 +30,7 @@ var about = function () {
   screen.appendChild(hyperscroll(content))
 }
 
-var mentionsStream = function () {
+/*var mentionsStream = function () {
   var content = h('div.content')
 
   var screen = document.getElementById('screen')
@@ -65,7 +65,7 @@ var mentionsStream = function () {
     }),
     stream.top(content)
   )
-}
+}*/
 
 var userStream = function (src) {
   var content = h('div.content')
@@ -268,8 +268,8 @@ module.exports = function () {
     userStream(src)
   } else if (ref.isMsg(src)) {
     msgThread(src)
-  } else if (src == 'queue') {
-    mentionsStream()
+  //} else if (src == 'queue') {
+  //  mentionsStream()
   } else if (src == 'about') {
     about()
   } else if (src == 'edit') {
@@ -279,30 +279,4 @@ module.exports = function () {
   } else {
     everythingStream()
   }
-
-  sbot.friends.get({dest: id}, function (err, follows) {
-    var currentScreen = document.getElementById('screen')
-    if (follows === null) {
-      if (document.getElementById('inviter')) { return }
-      var invitebox =  h('input', {placeholder: 'Invite Code Here'})
-      var invite = h('div.message#inviter', 
-        'Hey, no one follows you. Either ', h('a', {href: '#key'}, 'import your key'), ' or get an invite from a pub:', 
-        h('br'), 
-        invitebox,
-        h('button', 'Accept', {onclick: function (invite) {
-          sbot.acceptInvite(invitebox.value, function (err, invited) {
-            if (err) throw err
-            console.log(invited)
-            location.hash = '#' + id
-            location.hash = '#'
-          })
-        }}) 
-      )
-      if (currentScreen.firstChild.firstChild) {
-        currentScreen.firstChild.insertBefore(invite, currentScreen.firstChild.firstChild)
-      } else {
-        currentScreen.firstChild.appendChild(invite)
-      }
-    }
-  }) 
 }

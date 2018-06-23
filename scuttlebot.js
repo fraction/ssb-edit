@@ -65,37 +65,6 @@ module.exports = {
       })
     )
   }),
-  backlinks: rec.source(function (query) {
-    return sbot.backlinks.read(query)
-  }),
-  names: {
-    get: rec.async(function (opts, cb) {
-      sbot.names.get(opts, cb)
-    }),
-    getImages: rec.async(function (opts, cb) {
-      sbot.names.getImages(opts, cb)
-    }),
-    getImageFor: rec.async(function (opts, cb) {
-        return sbot.names.getImageFor(opts, cb)
-      if(images[opts]) cb(null, images[opts])
-      else
-        sbot.names.getImageFor(opts, function (err, v) {
-          if(err) cb(err)
-          else cb(null, images[opts]= v)
-        })
-    }),
-    getSignifier: rec.async(function (opts, cb) {
-      sbot.names.getSignifier(opts, cb)
-    }),
-    getSignifies: rec.async(function (opts, cb) {
-      sbot.names.getSignifies(opts, cb)
-    })
-  },
-  friends: {
-    get: rec.async(function (opts, cb) {
-      sbot.friends.get(opts, cb)
-    })
-  },
   query: rec.source(function (query) {
     return sbot.query.read(query)
   }),
