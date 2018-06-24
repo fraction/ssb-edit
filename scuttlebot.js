@@ -65,6 +65,9 @@ module.exports = {
       })
     )
   }),
+  backlinks: rec.source(function (query) {
+    return sbot.backlinks.read(query)
+  }),
   query: rec.source(function (query) {
     return sbot.query.read(query)
   }),

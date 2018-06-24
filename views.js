@@ -30,7 +30,7 @@ var about = function () {
   screen.appendChild(hyperscroll(content))
 }
 
-/*var mentionsStream = function () {
+var mentionsStream = function () {
   var content = h('div.content')
 
   var screen = document.getElementById('screen')
@@ -41,6 +41,7 @@ var about = function () {
     return pull(
       Next(sbot.backlinks, opts, ['value', 'timestamp']),
       pull.map(function (msg) {
+        if (msg.value.private == true) return
         return render(msg)
       })
     )
@@ -50,6 +51,7 @@ var about = function () {
     createStream({
       limit: 10,
       reverse: true, 
+      index: 'DTA',
       live: false,
       query: [{$filter: {dest: id}}]
     }),
@@ -60,12 +62,13 @@ var about = function () {
     createStream({
       limit: 10,
       old: false,
+      index: 'DTA',
       live: true,
       query: [{$filter: {dest: id}}]
     }),
     stream.top(content)
   )
-}*/
+}
 
 var userStream = function (src) {
   var content = h('div.content')
@@ -268,8 +271,8 @@ module.exports = function () {
     userStream(src)
   } else if (ref.isMsg(src)) {
     msgThread(src)
-  //} else if (src == 'queue') {
-  //  mentionsStream()
+  } else if (src == 'mentions') {
+    mentionsStream()
   } else if (src == 'about') {
     about()
   } else if (src == 'edit') {
