@@ -47,26 +47,6 @@ module.exports.getFollowing = function (src) {
     })
   )
   return following
-/*  var count = 0
-
-  var following = h('div.following')
-
-  following.appendChild(h('span', 'Following: ' + count))
-  following.appendChild(h('br'))
-
-  sbot.friends.get({source: src}, function (err, follows) {
-    for (var i in follows) {
-      if (follows.hasOwnProperty(i)) {
-        if (follows[i] == true)
-        following.appendChild(h('a', {title: avatar.name(i).textContent, href: '#' + i}, h('span.avatar--small', avatar.image(i))))
-        count++
-        following.firstChild.textContent = 'Following: ' + count 
-      }
-    }
-  })
-
-  return following
-*/
 }
 
 module.exports.getFollowers = function (src) {
@@ -104,29 +84,6 @@ module.exports.getFollowers = function (src) {
   )
 
   return followers
-
-
-  /*var count = 0
-
-  var followers = h('div.followers')
-
-  followers.appendChild(h('span', 'Followers: ' + count))
-  followers.appendChild(h('br'))
-
-  sbot.friends.get({dest: src}, function (err, follows) {
-    for (var i in follows) {
-      if (follows.hasOwnProperty(i)) {
-        if (follows[i] == true) {
-          followers.appendChild(h('a', {title: avatar.name(i).textContent, href: '#' + i}, h('span.avatar--small', avatar.image(i))))
-          count++
-          followers.firstChild.textContent = 'Followers: ' + count
-        }
-      }
-    }
-  })
-
-
-  return followers*/
 }
 
 module.exports.follow = function (src) {
@@ -415,33 +372,6 @@ module.exports.messageLink = function (id) {
   }
   return link
 }
-
-
-/*module.exports.messageLink = function (msglink) {
-  var link = h('span', h('a', {href: '#' + msglink}, msglink.substring(0, 44) + '...'))
-
-  if (ref.isMsg(msglink)) {
-    pull(
-      sbot.get(msglink, function (err, data) {
-        console.log(data)
-        if(err && err.name == 'NotFoundError') {
-          var newlink = h('span', h('a', {href: '#' + msglink},  msglink.substring(0, 35) + ' (Missing)...'))
-        }
-        if(data.content.type === 'post' && 'string' === typeof data.content.text) {
-          var newlink = h('span', h('a', {href: '#' + msglink}, data.content.text.substring(0, 44) + '...'))
-        } 
-        else {
-          var newlink = h('span', h('a', {href: '#' + msglink}, msglink.substring(0, 44) + '...'))
-        }
-        if (link) {
-          link.parentNode.replaceChild(newlink, link)
-        }
-      })
-    )
-  }
-
-  return link
-}*/
 
 module.exports.rawJSON = function (obj) {
   return JSON.stringify(obj, null, 2)
