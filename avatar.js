@@ -16,6 +16,7 @@ module.exports.name = function (key) {
   var avatarname = h('span', key.substring(0, 10))
 
   avatar(sbot, id, key, function (err, data) {
+    if (err) throw err
     if (data.name) {
       if (data.name[0] != '@') {
         var name = '@' + data.name
@@ -34,6 +35,7 @@ module.exports.image = function (key) {
   var img = visualize(new Buffer(key.substring(1), 'base64'), 256)
 
   avatar(sbot, id, key, function (err, data) {
+    if (err) throw err
     if (data.image) {
       localStorage[key + 'image'] = data.image
       img.src = config.blobsUrl + data.image 
