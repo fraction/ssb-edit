@@ -8,7 +8,6 @@ var tools = require('./tools')
 
 var config = require('./config')()
 var id = require('./keys').id
-
 var avatar = require('./avatar')
 
 module.exports = function (msg) {
@@ -25,11 +24,6 @@ module.exports = function (msg) {
     return message
   } 
 
-  /*if (msg.value.private == true) {
-    var privateMsg = h('span', ' ', h('img.emoji', {src: config.emojiUrl + 'lock.png'}), ' ', h('button.btn', 'Open'))
-    message.appendChild(tools.mini(msg, privateMsg))
-    return message  
-  }*/
   else if (msg.value.content.type == 'contact') {
     if (msg.value.content.following == true) {
       var following = h('span', ' follows ', h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact)))

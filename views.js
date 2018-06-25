@@ -16,7 +16,8 @@ var tools = require('./tools')
 var avatar = require('./avatar')
 var id = require('./keys').id
 
-var fs = require('fs')
+var ssbKeys = require('ssb-keys')
+var keys = require('./keys')
 
 var compose = require('./compose')
 
@@ -28,6 +29,42 @@ var about = function () {
   var content = h('div.content', about)
 
   screen.appendChild(hyperscroll(content))
+}
+
+var privateStream = function () {
+  var content = h('div.content')
+  var screen = document.getElementById('screen')
+  screen.appendChild(hyperscroll(content))
+
+  function createStream (opts) {
+    return pull(
+      More(sbot.createLogStream, opts),
+      pull.filter(function (msg) {
+        return 'string' == typeof msg.value.content
+      }),
+      pull.filter(function (msg) {
+        var unboxed = ssbKeys.unbox(msg.value.content, keys)
+        if (unboxed) {
+          msg.value.content = unboxed
+          msg.value.private = true
+          return msg
+        }
+      }),
+      pull.map(function (msg) {
+        return render(msg)
+      })
+    )
+  }
+
+  pull(
+    createStream({old: false, limit: 1000}),
+    stream.top(content)
+  )
+
+  pull(
+    createStream({reverse: true, live: false, limit: 1000}),
+    stream.bottom(content)
+  )
 }
 
 var mentionsStream = function () {
@@ -275,8 +312,8 @@ module.exports = function () {
     mentionsStream()
   } else if (src == 'about') {
     about()
-  } else if (src == 'edit') {
-    edit()
+  } else if (src == 'private') {
+    privateStream()
   } else if (src == 'key') {
     keyPage()
   } else {
