@@ -19,9 +19,9 @@ npm run build
 npm start
 ```
 
-It should launch a browser window, and comes pre-configured to use the Decent network by default. If you already have an `.decent` folder, mvd should 'just work'.
+It should launch a browser window, and comes pre-configured to use the main ssb network by default. If you already have an `.ssb` folder, mvd should 'just work'.
 
-To use with ssb try `npm run ssb`, to launch a testnet try `npm run testnet`.
+To use with decent try `npm run decent`, to launch a testnet try `npm run testnet`.
 
 ### history
 
