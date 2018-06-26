@@ -190,7 +190,7 @@ module.exports.star = function (msg) {
     type: 'vote',
     vote: { link: msg.key, expression: 'Star' }
   }
-  console.log(msg)
+
   if (msg.value.content.recps) {
     vote.recps = msg.value.content.recps
   }
