@@ -25,14 +25,22 @@ module.exports = function (msg) {
   } 
 
   else if (msg.value.content.type == 'contact') {
+    var contact = h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact))
     if (msg.value.content.following == true) {
-      var following = h('span', ' follows ', h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact)))
+      var following = h('span', ' follows ', contact)
       message.appendChild(tools.mini(msg, following))
     } 
-
     if (msg.value.content.following == false) {
-      var unfollowing = h('span', ' unfollows ', h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact)))
+      var unfollowing = h('span', ' unfollows ', contact)
       message.appendChild(tools.mini(msg, unfollowing))
+    }
+    if (msg.value.content.blocking == true) {
+      var blocking = h('span', ' blocks ', contact)
+      message.appendChild(tools.mini(msg, blocking))
+    }
+    if (msg.value.content.blocking == false) {
+      var unblocking = h('span', ' unblocks ', contact)
+      message.appendChild(tools.mini(msg, unblocking))
     }
     return message
   }
