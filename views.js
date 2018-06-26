@@ -296,6 +296,72 @@ function everythingStream () {
   )
 }
 
+function backchannel () {
+
+  var screen = document.getElementById('screen')
+  var content = h('div.content')
+
+  screen.appendChild(hyperscroll(content))
+
+  var chatbox = h('input', {placeholder: 'Backchannel'})
+
+  var chat = h('div.content')
+
+  var publish = h('button.btn', 'Publish', {
+    onclick: function () {
+      if (chatbox.value) {
+        var content = {
+          text: chatbox.value,
+          type: 'scat_message'
+        }
+        sbot.publish(content, function (err, msg) {
+          if (err) throw err
+          console.log('Published!', msg)
+        })
+      }
+    } 
+  })
+
+  chat.appendChild(h('div.message', chatbox, publish))
+
+  if (screen.firstChild.firstChild) {
+    screen.firstChild.insertBefore(chat, screen.firstChild.firstChild)
+  } else {
+    screen.firstChild.appendChild(chat)
+  }
+
+  function createStream (opts) {
+    return pull(
+      Next(sbot.query, opts, ['value', 'timestamp']),
+      pull.map(function (msg) {
+        if (msg.value) {
+          return render(msg)
+        }
+      })
+    )
+  }
+
+  pull(
+    createStream({
+      limit: 10,
+      reverse: true,
+      live: false,
+      query: [{$filter: { value: { content: {type: 'scat_message'}, timestamp: { $gt: 0 }}}}]
+    }),
+    stream.bottom(content)
+  )
+
+  pull(
+    createStream({
+      limit: 10,
+      old: false,
+      live: true,
+      query: [{$filter: { value: { content: {type: 'scat_message'}, timestamp: { $gt: 0 }}}}]
+    }),
+    stream.top(content)
+  )
+}
+
 
 function hash () {
   return window.location.hash.substring(1)
@@ -312,6 +378,8 @@ module.exports = function () {
     mentionsStream()
   } else if (src == 'about') {
     about()
+  } else if (src == 'backchannel') {
+    backchannel()
   } else if (src == 'private') {
     privateStream()
   } else if (src == 'key') {

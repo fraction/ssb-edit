@@ -23,7 +23,10 @@ module.exports = function (msg) {
     message.appendChild(tools.mini(msg, muted))
     return message
   } 
-
+  else if (msg.value.content.type == 'scat_message') {
+    message.appendChild(tools.mini(msg, ' ' + msg.value.content.text))
+    return message
+  }
   else if (msg.value.content.type == 'contact') {
     var contact = h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact))
     if (msg.value.content.following == true) {

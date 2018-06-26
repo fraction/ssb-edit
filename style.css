@@ -204,7 +204,7 @@ textarea {
   outline: none;
 }
 
-.btn .emoji {
+.emoji {
   padding: .2em;
 }
 
@@ -253,7 +253,9 @@ pre {
   line-height: 20px;
 }
 
+button {margin: 0; margin-top: -.2em;}
 
+input {width: 88%; }
 
 .btn {
   display: inline-block;
