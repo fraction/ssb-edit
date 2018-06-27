@@ -316,6 +316,7 @@ function backchannel () {
         }
         sbot.publish(content, function (err, msg) {
           if (err) throw err
+          chatbox.value = ''
           console.log('Published!', msg)
         })
       }
