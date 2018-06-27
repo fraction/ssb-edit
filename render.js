@@ -10,6 +10,10 @@ var config = require('./config')()
 var id = require('./keys').id
 var avatar = require('./avatar')
 
+function hash () {
+  return window.location.hash.substring(1)
+}
+
 module.exports = function (msg) {
   var message = h('div.message#' + msg.key.substring(0, 44))
 
@@ -24,6 +28,10 @@ module.exports = function (msg) {
     return message
   } 
   else if (msg.value.content.type == 'scat_message') {
+    var src = hash()
+    if (src != 'backchannel') {
+      message.appendChild(h('button.btn.right', h('a', {href: '#backchannel'}, 'Chat')))
+    }
     message.appendChild(tools.mini(msg, ' ' + msg.value.content.text))
     return message
   }

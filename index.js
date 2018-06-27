@@ -34,7 +34,6 @@ var nav = h('div.navbar',
     h('li', h('a', {href: '#private' }, 'Private')),
     h('li', h('a', {href: '#mentions' }, 'Mentions')),
     h('li', h('a', {href: '#key' }, 'Key')),
-    h('li', h('a', {href: '#backchannel' }, 'Chat')),
     h('li.right', h('a', {href: '#about'}, '?'))
   )
 )
