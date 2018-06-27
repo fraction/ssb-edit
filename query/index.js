@@ -8,7 +8,7 @@ function isString(s) {
 }
 
 exports.name = 'query'
-exports.version = require('./package.json').version
+exports.version = '1.0.0'
 exports.manifest = {
   read: 'source',
   explain: 'sync'
