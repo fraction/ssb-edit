@@ -86,6 +86,11 @@ module.exports = {
   addblob: rec.sink(function (cb)  {
     return sbot.blobs.add(cb)
   }),
+  friends: {
+    get: rec.async(function (opts, cb) {
+      sbot.friends.get(opts, cb)
+    })
+  },
   publish: rec.async(function (content, cb) {
     if(content.recps)
       content = ssbKeys.box(content, content.recps.map(function (e) {

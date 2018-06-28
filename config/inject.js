@@ -58,6 +58,7 @@ module.exports = function (name, override) {
      //standard stuff that probably doesn't need to change below
     host: nonPrivate.v4 || '',
     timeout: 0,
+    allowPrivate: true,
     pub: true,
     local: true,
     friends: {

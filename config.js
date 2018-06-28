@@ -3,16 +3,22 @@ var http = require('http')
 module.exports = function () {
   var host = window.location.origin
 
-  if (localStorage[host])
-    var config = JSON.parse(localStorage[host])
-  else
+  function getConfig () {
     http.get(host + '/get-config', function (res) {
       res.on('data', function (data, remote) {
         var config = data
         localStorage[host] = config
-        location.reload()
       })
     })
+  }
+
+  if (localStorage[host]) {
+    var config = JSON.parse(localStorage[host])
+    getConfig()
+  } else {
+    getConfig()
+    location.reload()
+  }
 
   config.blobsUrl = host + '/blobs/get/'
   config.emojiUrl = host + '/img/emoji/'

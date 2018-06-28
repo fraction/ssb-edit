@@ -6,12 +6,15 @@ var open = require('opn')
 var home = require('os-homedir')()
 var nonPrivate = require('non-private-ip')
 var muxrpcli = require('muxrpcli')
-var yargs = require('yargs').argv
 
 var SEC = 1e3
 var MIN = 60*SEC
 
-var config = require('./config/inject')(yargs.appname || 'ssb')
+var network = 'ssb'
+//var network = 'decent'
+//var network = 'testnet'
+
+var config = require('./config/inject')(network)
 
 config.keys = ssbKeys.loadOrCreateSync(path.join(config.path, 'secret'))
 
@@ -47,6 +50,9 @@ if (argv[0] == 'server') {
           var send = config
           delete send.keys // very important to keep this, as it removes the server keys from the config before broadcast
           send.address = sbot.ws.getAddress()
+          sbot.invite.create({modern: true}, function (err, cb) {
+            send.invite = cb
+          })
           if(req.url == '/')
             res.end(mvdClient)
           if(req.url == '/get-config')

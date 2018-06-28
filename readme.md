@@ -21,7 +21,8 @@ npm start
 
 mvd should launch a browser window, and comes pre-configured to use the main ssb network by default. If you already have an `.ssb` folder, mvd should 'just work'.
 
-To use with decent try `npm run decent`, to launch a testnet try `npm run testnet`.
+To use `mvd` with decent or on a testnet, uncomment the appropriote lines in `bin.js`. For some reason sbot doesn't accept arguments properly, so we gotta hard code networsk right now!
+
 
 [try it online](http://gitmx.com/) -- decent(ralized)
 
