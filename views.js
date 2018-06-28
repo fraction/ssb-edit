@@ -20,6 +20,8 @@ var id = require('./keys').id
 var ssbKeys = require('ssb-keys')
 var keys = require('./keys')
 
+var checkInvite = require('./invite')
+
 var compose = require('./compose')
 
 var about = function () {
@@ -388,65 +390,7 @@ module.exports = function () {
     keyPage()
   } else {
     everythingStream()
+    checkInvite()
   }
 
-
-  function parseInvite (invite) {
-    return ref.parseInvite(invite)
-  }
-
-  // TODO: this should really only pop up if you have no friends
-  var currentScreen = document.getElementById('screen')
-  var invitebox =  h('input', {placeholder: 'Invite Code Here'})
-  invitebox.value = config.invite
-  var invite = h('div.content', h('div.message#inviter',
-    'Hey, no one follows you. Your secure-scuttlebutt feed may not replicate unless a pub follows you. Either ', h('a', {href: '#key'}, 'import your key'), ' or use a pub invite:',
-    h('br'),
-    invitebox,
-    h('button', 'Accept', {onclick: function (e) {
-      var data = parseInvite(invitebox.value)
-      console.log(data)
-      e.preventDefault()
-      //sbot.gossip.connect(data.remote, function (err) {
-
-      //})
-
-      client(keys, { 
-        remote: data.invite,
-        caps: config.caps, 
-        manifest: {invite: {use: 'async'}, getAddress: 'async'}
-      }, function (err, remotebot) {
-        if (err) throw err
-        remotebot.invite.use({feed: id}, function (_err, msg) {
-          if (msg) {
-            sbot.publish({
-              type: 'contact',
-              contact: data.key,
-              following: true
-            })
-          }
-        })
-        setTimeout(function () {
-          location.hash = '#' + id
-          location.hash = '#'
-        }, 100) 
-      })
-    }})
-  ))
-  if (currentScreen.firstChild.firstChild) {
-    currentScreen.firstChild.insertBefore(invite, currentScreen.firstChild.firstChild)
-  } else {
-    currentScreen.firstChild.appendChild(invite)
-  } 
-  sbot.friends.get({dest: id}, function (err, follows) { 
-    for (var i in follows) {
-      if (follows[i] === true) {
-        var getInvite = document.getElementById('inviter')
-
-        if (getInvite) {
-          getInvite.parentNode.removeChild(getInvite)
-        }
-      }
-    }
-  })
 }
