@@ -17,8 +17,8 @@
   "author": "Ev Bogue <ev@evbogue.com>",
   "license": "MIT",
   "dependencies": {
-    "decent-ws": "1.0.3",
-    "deep-extend": "^0.5.1",
+    "decent-ws": "1.0.4",
+    "deep-extend": "^0.6.0",
     "emoji-server": "^1.0.0",
     "human-time": "0.0.1",
     "hyperloadmore": "^1.1.0",
