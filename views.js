@@ -140,24 +140,54 @@ var userStream = function (src) {
     } else {
       screen.firstChild.appendChild(profile)
     }
+    var name = avatar.name(src)
+
+    var editname = h('span', 
+      avatar.name(src), 
+      h('button.btn', 'Edit', {
+        onclick: function () {
+          var nameput = h('input', {placeholder: name.textContent})
+          var nameedit = 
+            h('span', nameput, 
+              h('button.btn', 'Preview', {
+                onclick: function () {
+                  if (nameput.value[0] != '@')
+                    tobename = nameput.value
+                  else
+                    tobename = nameput.value.substring(1, 100)
+                  var newname = h('span', h('a', {href: '#' + src}, '@' + tobename), h('button.btn', 'Publish', {
+                    onclick: function () {
+                      var donename = h('span', h('a', {href: '#' + src}, '@' + tobename)) 
+                      sbot.publish({type: 'about', about: src, name: tobename})
+                      localStorage[src + 'name'] = tobename
+                      newname.parentNode.replaceChild(donename, newname)
+                   }
+                  }))
+                  nameedit.parentNode.replaceChild(newname, nameedit) 
+                }
+              })
+            )
+          editname.parentNode.replaceChild(nameedit, editname)
+        }
+      })
+    )
 
     var avatars = h('div.avatars', 
       h('a', {href: '#' + src},
         h('span.avatar--medium', avatar.image(src)),
-        avatar.name(src)
+        editname
       )
     )
     
     pull(
       sbot.userStream({id: src, reverse: false, limit: 1}),
       pull.drain(function (msg) { 
-        var howlong = h('span', ' arrived ', human(new Date(msg.value.timestamp)))
+        var howlong = h('span', h('br'), ' arrived ', human(new Date(msg.value.timestamp)))
         avatars.appendChild(howlong)
         console.log(msg)
       })
     )
 
-    var name = avatar.name(src)
 
     var buttons = h('div.buttons')
    
