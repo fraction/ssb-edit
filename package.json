@@ -17,10 +17,12 @@
   "author": "Ev Bogue <ev@evbogue.com>",
   "license": "MIT",
   "dependencies": {
+    "dataurl-": "^0.1.0",
     "decent-ws": "1.0.4",
     "deep-extend": "^0.6.0",
     "emoji-server": "^1.0.0",
     "human-time": "0.0.1",
+    "hyperfile": "^2.0.0",
     "hyperloadmore": "^1.1.0",
     "hyperscript": "^2.0.2",
     "hyperscroll": "^1.0.0",

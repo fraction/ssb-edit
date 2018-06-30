@@ -2,6 +2,8 @@ var pull = require('pull-stream')
 var human = require('human-time')
 var sbot = require('./scuttlebot')
 var hyperscroll = require('hyperscroll')
+var hyperfile = require('hyperfile')
+var dataurl = require('dataurl-')
 var More = require('pull-more')
 var stream = require('hyperloadmore/stream')
 var h = require('hyperscript')
@@ -140,11 +142,12 @@ var userStream = function (src) {
     } else {
       screen.firstChild.appendChild(profile)
     }
+
     var name = avatar.name(src)
 
     var editname = h('span', 
       avatar.name(src), 
-      h('button.btn', 'Edit', {
+      h('button.btn', 'New name', {
         onclick: function () {
           var nameput = h('input', {placeholder: name.textContent})
           var nameedit = 
@@ -172,10 +175,71 @@ var userStream = function (src) {
       })
     )
 
+    var editimage = h('span',
+      h('button.btn', 'New image', {
+        onclick: function () {
+          var upload = 
+          h('span',
+            hyperfile.asDataURL(function (data) {
+              if(data) {
+                //img.src = data
+                var _data = dataurl.parse(data)
+                pull(
+                  pull.once(_data.data),
+                  sbot.addblob(function (err, hash) {
+                    if(err) return alert(err.stack)
+                    selected = {
+                      link: hash,
+                      size: _data.data.length,
+                      type: _data.mimetype,
+                      width: 512,
+                      height: 512
+                    }
+                  })
+                )
+              }
+            }),
+            h('button.btn', 'Preview image', {
+              onclick: function() {
+                if (selected) {
+                  console.log(selected)
+                  var oldImage = document.getElementById('profileImage')
+                  var newImage = h('span.avatar--medium', h('img', {src: config.blobsUrl + selected.link}))
+                  var publish = h('button.btn', 'Publish image', {
+                    onclick: function () {
+                      sbot.publish({
+                        type: 'about',
+                        about: src,
+                        image: selected
+                      }, function (err, published) {
+                        console.log(published)
+                      })
+                    }
+                  })
+                  upload.parentNode.replaceChild(publish, upload)
+                  oldImage.parentNode.replaceChild(newImage, oldImage)
+                }
+              /*if(selected) {
+                api.message_confirm({
+                  type: 'about',
+                  about: id,
+                  image: selected
+                })
+              } else { alert('select an image before hitting preview')}*/
+              }
+            })
+          )
+        editimage.parentNode.replaceChild(upload, editimage)
+        }
+      })
+    )
+
     var avatars = h('div.avatars', 
       h('a', {href: '#' + src},
-        h('span.avatar--medium', avatar.image(src)),
-        editname
+        h('span.avatar--medium#profileImage', avatar.image(src)),
+        editname,
+        h('br'),
+        editimage
       )
     )
     
