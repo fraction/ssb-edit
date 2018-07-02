@@ -83,7 +83,7 @@ var mentionsStream = function () {
     return pull(
       Next(sbot.backlinks, opts, ['value', 'timestamp']),
       pull.map(function (msg) {
-        if (msg.value.private == true) return
+        if (msg.value.private == true) return h('div.private')
         return render(msg)
       })
     )
