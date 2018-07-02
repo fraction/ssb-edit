@@ -191,9 +191,7 @@ var userStream = function (src) {
                     selected = {
                       link: hash,
                       size: _data.data.length,
-                      type: _data.mimetype,
-                      width: 512,
-                      height: 512
+                      type: _data.mimetype
                     }
                   })
                 )
