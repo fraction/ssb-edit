@@ -17,7 +17,9 @@ module.exports = function () {
     getConfig()
   } else {
     getConfig()
-    location.reload()
+    setTimeout(function () {
+      location.reload()
+    }, 1000)
   }
 
   config.blobsUrl = host + '/blobs/get/'
