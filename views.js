@@ -302,16 +302,21 @@ var msgThread = function (src) {
   )
 
   sbot.get(src, function (err, data) {
-    if (err) {console.log('could not find message')}
-    data.value = data
-    data.key = src
-    console.log(data)
-    var rootMsg = render(data)
+    if (err) {
+      var message = h('div.message', 'Missing message!')
+      content.appendChild(message)
+    }
+    if (data) {
+      data.value = data
+      data.key = src
+      console.log(data)
+      var rootMsg = render(data)
 
-    if (content.firstChild) {
-      content.insertBefore(rootMsg, content.firstChild)
-    } else {
-      content.appendChild(rootMsg)
+      if (content.firstChild) {
+        content.insertBefore(rootMsg, content.firstChild)
+      } else {
+        content.appendChild(rootMsg)
+      }
     }
   })
 }
