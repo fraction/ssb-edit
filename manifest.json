@@ -80,7 +80,7 @@
     "dump": "source"
   },
   "ws": {},
-  "fulltext": {
-    "search": "source"
+  "search": {
+    "query": "source"
   }
 }

@@ -467,6 +467,20 @@ function backchannel () {
   )
 }
 
+function search (src) {
+  console.log('search' + src)
+
+  var content = h('div.content')
+  var screen = document.getElementById('screen')
+  screen.appendChild(hyperscroll(content))
+
+  pull(
+    sbot.search.query({query: src}),
+    pull.drain(function (search) {
+      content.appendChild(render(search))
+    })
+  )
+}
 
 function hash () {
   return window.location.hash.substring(1)
@@ -474,7 +488,7 @@ function hash () {
 
 module.exports = function () {
   var src = hash()
-
+  console.log(src)
   if (ref.isFeed(src)) {
     userStream(src)
   } else if (ref.isMsg(src)) {
@@ -489,6 +503,9 @@ module.exports = function () {
     privateStream()
   } else if (src == 'key') {
     keyPage()
+  } else if (src[0] == '?') {
+    search(src.substr(1).split('%20').join(' '))
+    //search(src.substring(1, 1000))
   } else {
     everythingStream()
     checkInvite()

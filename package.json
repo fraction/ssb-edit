@@ -52,6 +52,7 @@
     "ssb-markdown": "^3.6.0",
     "ssb-mentions": "^0.5.0",
     "ssb-ref": "^2.11.1",
+    "ssb-search": "^1.0.1",
     "visualize-buffer": "0.0.1",
     "yargs": "^11.0.0"
   }

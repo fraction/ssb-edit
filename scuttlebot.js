@@ -91,6 +91,11 @@ module.exports = {
       sbot.friends.get(opts, cb)
     })
   },
+  search: {
+    query: rec.source(function (opts) {
+      return sbot.search.query(opts)
+    })
+  },
   publish: rec.async(function (content, cb) {
     if(content.recps)
       content = ssbKeys.box(content, content.recps.map(function (e) {
