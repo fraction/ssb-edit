@@ -281,9 +281,13 @@ var userStream = function (src) {
     buttons.appendChild(writeMessage)
     buttons.appendChild(writePrivate)
     buttons.appendChild(tools.follow(src))
-    
-    profile.firstChild.appendChild(tools.getFollowing(src))
-    profile.firstChild.appendChild(tools.getFollowers(src))
+
+    buttons.appendChild(h('button.btn', 'Generate follows', {
+      onclick: function () {
+        profile.firstChild.appendChild(tools.getFollowing(src))
+        profile.firstChild.appendChild(tools.getFollowers(src))
+      }
+    }))    
 }
 
 var msgThread = function (src) {
