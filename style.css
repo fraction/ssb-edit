@@ -19,6 +19,12 @@ body {
   width: 100%;
 }
 
+.search {
+  margin-top: 1.5px;
+  float: right;
+  width: 200px;
+}
+
 .header {
   padding-bottom: .7em;
   border-bottom: 1px solid #252525;
