@@ -373,7 +373,11 @@ function everythingStream () {
       Next(sbot.query, opts, ['value', 'timestamp']),
       pull.map(function (msg) {
         if (msg.value) {
-          return render(msg)
+          if (msg.value.timestamp > Date.now()) {
+            return h('div.future')
+          } else {
+            return render(msg)
+          }
         }
       })
     )
