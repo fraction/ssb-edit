@@ -49,10 +49,12 @@ module.exports = function (opts, fallback) {
     var textarea = h('textarea.compose', opts.mentions)
   }
 
+  else if (opts.type == 'wiki')
+    var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a wiki (anyone can edit)'})
   else if (opts.type == 'post')
-    var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message'})
+    var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message (only you can edit)'})
   else
-    var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message'}, fallback.messageText) 
+    var textarea = h('textarea.compose', {placeholder: opts.placeholder || 'Write a message (only you can edit)'}, fallback.messageText) 
 
   var cancelBtn = h('button.btn', 'Cancel', {
     onclick: function () {
@@ -106,7 +108,7 @@ module.exports = function (opts, fallback) {
             msg.value.private = true
 
           console.log(msg)
-          if (opts.type == 'post') 
+          if (opts.type == 'post' || opts.type == 'wiki') 
             var header = tools.header(msg)
           if (opts.type == 'update')
             var header = tools.timestamp(msg, {edited: true})

@@ -280,7 +280,7 @@ function votes (msg) {
 module.exports.timestamp = function (msg, edited) {
   var timestamp
   if (edited)
-    timestamp = h('span.timestamp', 'Edited: ', h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp))))
+    timestamp = h('span.timestamp', 'Edited by: ', h('a', {href: '#' +  msg.value.author}, h('span.avatar--small', avatar.cachedImage(msg.value.author))), h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp))))
   else 
     timestamp = h('span.timestamp', h('a', {href: '#' + msg.key}, human(new Date(msg.value.timestamp))))
   return timestamp

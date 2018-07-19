@@ -16,13 +16,29 @@ var nav = h('div.navbar',
   h('div.internal',
     h('li', h('a', {href: '#' + id}, h('span.avatar--small', avatar.image(id)))),
     h('li', h('a', {href: '#' + id}, avatar.name(id))),
-    h('li', h('a', 'Compose', {
+    h('li', h('a', 'New Post', {
       onclick: function () {
         if (document.getElementById('composer')) { return }
         else {
           var currentScreen = document.getElementById('screen')
           var opts = {}
           opts.type = 'post'
+          var composer = h('div.content#composer', h('div.message', compose(opts)))
+          if (currentScreen.firstChild.firstChild) {
+            currentScreen.firstChild.insertBefore(composer, currentScreen.firstChild.firstChild)
+          } else {
+            currentScreen.firstChild.appendChild(composer)
+          }
+        }
+      }
+    })),
+    h('li', h('a', 'New Wiki', {
+      onclick: function () {
+        if (document.getElementById('composer')) { return }
+        else {
+          var currentScreen = document.getElementById('screen')
+          var opts = {}
+          opts.type = 'wiki'
           var composer = h('div.content#composer', h('div.message', compose(opts)))
           if (currentScreen.firstChild.firstChild) {
             currentScreen.firstChild.insertBefore(composer, currentScreen.firstChild.firstChild)

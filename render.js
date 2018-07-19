@@ -93,7 +93,66 @@ module.exports = function (msg) {
     return message  
   }
 
-  else if (msg.value.content.type == 'post') {
+  else if (msg.value.content.type == 'wiki') {
+    var fallback = {}
+
+    var opts = {
+      type: 'wiki',
+      branch: msg.key
+    }
+
+    if (msg.value.content.root)
+      opts.root = msg.value.content.root
+    else
+      opts.root = msg.key
+
+    message.appendChild(tools.header(msg))
+
+    message.appendChild(h('div.message__body', tools.markdown(msg.value.content.text)))
+
+    pull(
+      sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}], limit: 100, live: true}),
+      pull.drain(function (update) {
+        if (update.sync) {
+        } else {
+          var newMessage = h('div', tools.markdown(update.value.content.text))
+          var latest = h('div.message__body',
+            tools.timestamp(update, {edited: true}),
+            newMessage
+          )
+          message.replaceChild(latest, message.childNodes[message.childNodes.length - 2])
+          fallback.messageText = update.value.content.text
+          opts.updated = update.key
+          opts.original = msg.key
+        }
+      })
+    )
+
+    var buttons = h('div.buttons')
+
+    buttons.appendChild(h('button.btn', 'Edit wiki', {
+      onclick: function () {
+        opts.type = 'edit'
+        if (!fallback.messageText)
+          fallback.messageText = msg.value.content.text
+
+        if (!opts.updated)
+          opts.updated = msg.key
+          opts.original = msg.key
+
+        var r = message.childNodes.length - 1
+        fallback.buttons = message.childNodes[r]
+        message.removeChild(message.childNodes[r])
+        var compose = h('div#edit:' + msg.key.substring(0, 44), composer(opts, fallback))
+        message.replaceChild(compose, message.lastElementChild)
+      }
+    }))
+
+    buttons.appendChild(tools.star(msg))
+    message.appendChild(buttons)
+    return message
+
+  } else if (msg.value.content.type == 'post') {
     var opts = {
       type: 'post',
       branch: msg.key
