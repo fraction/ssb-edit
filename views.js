@@ -473,17 +473,18 @@ function backchannel () {
 
 function search (src) {
   console.log('search' + src)
-
+  
   var content = h('div.content')
   var screen = document.getElementById('screen')
   screen.appendChild(hyperscroll(content))
-
+  
   pull(
-    sbot.search.query({query: src}),
+    sbot.search.query({query: src, limit: 100}),
     pull.drain(function (search) {
       content.appendChild(render(search))
     })
   )
+
 }
 
 function hash () {
@@ -507,9 +508,11 @@ module.exports = function () {
     privateStream()
   } else if (src == 'key') {
     keyPage()
-  } else if (src[0] == '?') {
-    search(src.substr(1).split('%20').join(' '))
-    //search(src.substring(1, 1000))
+  } else if (src[0] == '?' || (src[0] == '#')) {
+    if (src[0] == '#')
+      search(src.split('%20').join(' '))
+    else
+      search(src.substr(1).split('%20').join(' '))
   } else {
     everythingStream()
     checkInvite()

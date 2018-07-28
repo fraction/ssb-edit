@@ -55,7 +55,10 @@ var nav = h('div.navbar',
     h('li.right', h('a', {href: '#about'}, '?')),
     h('form.search', { 
       onsubmit: function (e) {
-        window.location.hash = '?' + search.value
+        if (search.value[0] == '#')
+          window.location.hash = '#' + search.value
+        else
+          window.location.hash = '?' + search.value
         e.preventDefault()
       }},
       search
