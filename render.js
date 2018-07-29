@@ -91,9 +91,9 @@ module.exports = function (msg) {
   else if (msg.value.content.type == 'git-repo') {
     message.appendChild(tools.header(msg))
     if (msg.value.content.name) {
-      message.appendChild(h('p', h('a', {href: msg.link}, '%' + msg.value.content.name)))
+      message.appendChild(h('p', h('a', {href: '#' + msg.key}, '%' + msg.value.content.name)))
     } else {
-      message.appendChild(h('p', h('a', {href: msg.link}, msg.link)))
+      message.appendChild(h('p', h('a', {href: '#' + msg.key}, msg.key)))
     }
     var cloneurl = h('pre', 'git clone ssb://' + msg.key)
     message.appendChild(cloneurl)
