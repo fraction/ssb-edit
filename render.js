@@ -76,7 +76,15 @@ module.exports = function (msg) {
       })
     )
     message.appendChild(cloneurl)
-    //message.appendChild(h('pre', tools.rawJSON(msg.value)))
+
+    var commits = h('ul')
+
+    msg.value.content.commits.map(function (commit) {
+      commits.appendChild(h('li', h('code', commit.sha1), ' - ', commit.title))
+    })
+
+    message.appendChild(commits)
+
     return message 
  
   }
