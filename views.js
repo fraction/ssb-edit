@@ -305,6 +305,7 @@ var msgThread = function (src) {
     }) 
   )
 
+
   sbot.get(src, function (err, data) {
     if (err) {
       var message = h('div.message', 'Missing message!')
@@ -321,6 +322,17 @@ var msgThread = function (src) {
       } else {
         content.appendChild(rootMsg)
       }
+      if (data.value.content.type == 'git-repo') {
+        pull(
+          sbot.backlinks({query: [{$filter: {value: {content: {type: 'git-update'}}, dest: src}}], reverse: true}),
+          pull.drain(function (msg) {
+            if (msg.value) {
+              content.appendChild(render(msg))
+            }
+          })
+        )
+      }
+
     }
   })
 }
