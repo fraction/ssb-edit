@@ -248,7 +248,7 @@ function votes (msg) {
   var votes = h('div.votes') 
   if (msg.key) {
     pull(
-      sbot.links({rel: 'vote', dest: msg.key, live: true }),
+      sbot.links({rel: 'vote', dest: msg.key/*, live: true*/ }),
       pull.drain(function (link) {
         if (link.key) {
           sbot.get(link.key, function (err, data) {
