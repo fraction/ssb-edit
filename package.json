@@ -20,6 +20,7 @@
     "dataurl-": "^0.1.0",
     "decent-ws": "1.0.4",
     "deep-extend": "^0.6.0",
+    "diff": "^3.5.0",
     "emoji-server": "^1.0.0",
     "human-time": "0.0.1",
     "hyperfile": "^2.0.0",
