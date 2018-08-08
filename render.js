@@ -10,12 +10,15 @@ var config = require('./config')()
 var id = require('./keys').id
 var avatar = require('./avatar')
 
+var diff = require('diff')
+
 function hash () {
   return window.location.hash.substring(1)
 }
 
 module.exports = function (msg) {
   var message = h('div.message#' + msg.key.substring(0, 44))
+
 
   if (!localStorage[msg.value.author])
     var cache = {mute: false}
@@ -27,6 +30,34 @@ module.exports = function (msg) {
     message.appendChild(tools.mini(msg, muted))
     return message
   } 
+  else if (msg.value.content.type == 'edit') {
+    message.appendChild(tools.header(msg))
+    var current = msg.value.content.text
+    sbot.get(msg.value.content.updated, function (err, updated) {
+      if (updated) {
+        fragment = document.createDocumentFragment()
+        var previous = updated.content.text
+        var ready = diff.diffWords(previous, current)
+        console.log(ready)
+        ready.forEach(function (part) {
+          if (part.added === true) {
+            color = 'cyan'
+          } else if (part.removed === true) {
+            color = 'gray'
+          } else {color = 'white'}
+          var span = h('span')
+          span.style.color = color
+          span.appendChild(document.createTextNode(part.value))
+          fragment.appendChild(span)
+        })
+        message.appendChild(h('code', fragment))
+      }
+    })
+    return message
+  }
+
+
+
   else if (msg.value.content.type == 'scat_message') {
     var src = hash()
     if (src != 'backchannel') {
@@ -78,10 +109,12 @@ module.exports = function (msg) {
     message.appendChild(cloneurl)
 
     var commits = h('ul')
+    if (msg.value.content.commits[0]) {
+      msg.value.content.commits.map(function (commit) {
+        commits.appendChild(h('li', h('code', commit.sha1), ' - ', commit.title))
+      })
 
-    msg.value.content.commits.map(function (commit) {
-      commits.appendChild(h('li', h('code', commit.sha1), ' - ', commit.title))
-    })
+    }
 
     message.appendChild(commits)
 
