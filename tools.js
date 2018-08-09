@@ -315,7 +315,6 @@ module.exports.mini = function (msg, content) {
   return mini
 }
 
-
 module.exports.header = function (msg) {
   var header = h('div.header')
 
@@ -330,13 +329,17 @@ module.exports.header = function (msg) {
   header.appendChild(exports.timestamp(msg))
   header.appendChild(votes(msg))
 
-  if (msg.value.private)
+  if (msg.value.private) {
     header.appendChild(h('span.right', ' ', h('img.emoji', {src: config.emojiUrl + 'lock.png'})))
-
+  }
+  if (msg.value.content.type == 'edit') {
+    header.appendChild(h('span.right', ' Edited: ', h('a', {href: '#' + msg.value.content.original}, exports.messageLink(msg.value.content.original))))
+  }
   return header
 }
 
-var ref = require('ssb-ref')
+
+
 
 module.exports.messageName = function (id, cb) {
   // gets the first few characters of a message, for message-link
@@ -358,7 +361,6 @@ module.exports.messageName = function (id, cb) {
 }
 
 var messageName = exports.messageName
-var ref = require('ssb-ref')
 
 module.exports.messageLink = function (id) {
   if (ref.isMsg(id)) {

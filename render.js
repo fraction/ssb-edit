@@ -47,7 +47,11 @@ module.exports = function (msg) {
           } else {color = 'white'}
           var span = h('span')
           span.style.color = color
-          span.appendChild(document.createTextNode(part.value))
+          if (part.removed === true) {
+            span.appendChild(h('del', document.createTextNode(part.value)))
+          } else {
+            span.appendChild(document.createTextNode(part.value))
+          }
           fragment.appendChild(span)
         })
         message.appendChild(h('code', fragment))

@@ -217,6 +217,7 @@ textarea {
 
 .right {
   float: right;
+  margin-right: .25em;
 }
 
 .emoji {
