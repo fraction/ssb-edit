@@ -21,7 +21,6 @@
     "decent-ws": "1.0.4",
     "deep-extend": "^0.6.0",
     "diff": "^3.5.0",
-    "emoji-server": "^1.0.0",
     "human-time": "0.0.1",
     "hyperfile": "^2.0.0",
     "hyperloadmore": "^1.1.0",
@@ -47,15 +46,12 @@
     "ssb-ebt": "^5.1.5",
     "ssb-feed": "^2.3.0",
     "ssb-friends": "^2.4.0",
-    "ssb-fulltext": "^1.0.1",
     "ssb-keys": "^7.0.16",
     "ssb-links": "^3.0.3",
     "ssb-markdown": "^3.6.0",
     "ssb-mentions": "^0.5.0",
     "ssb-ref": "^2.11.1",
     "ssb-search": "^1.0.1",
-    "ssb-validate": "^3.0.10",
-    "visualize-buffer": "0.0.1",
-    "yargs": "^11.0.0"
+    "visualize-buffer": "0.0.1"
   }
 }
