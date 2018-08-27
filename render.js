@@ -103,7 +103,7 @@ module.exports = function (msg) {
 
     pull(
       sbot.get(msg.value.content.repo, function (err, data) {
-        if (err) throw err
+        //if (err) throw err
         if (data.content.name) {
           actualname = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, '%' + data.content.name))
           reponame.parentNode.replaceChild(actualname, reponame)
