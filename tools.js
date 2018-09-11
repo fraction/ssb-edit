@@ -392,8 +392,9 @@ var config = require('./config')()
 module.exports.markdown = function (msg, md) {
   return {innerHTML: markdown.block(msg, {toUrl: function (url, image) {
     if(url[0] == '%' || url[0] == '@' || url[0] == '#') return '#' + url
-    if(!image) return url
     if(url[0] !== '&') return url
+    //if(url[0] == '&') return config.blobsUrl + url
+    //if(!image) return url
     return config.blobsUrl + url
   }})}
 }
