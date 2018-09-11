@@ -107,7 +107,7 @@ module.exports = function (msg) {
         if (data.content.name) {
           actualname = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, '%' + data.content.name))
           reponame.parentNode.replaceChild(actualname, reponame)
-        }
+        } else { console.log('no repo name') }
       })
     )
     message.appendChild(cloneurl)
