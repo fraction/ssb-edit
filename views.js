@@ -120,7 +120,7 @@ var userStream = function (src) {
       return pull(
         More(sbot.userStream, opts, ['value', 'sequence']),
         pull.map(function (msg) {
-          return render(msg)
+          return render(h('div', msg))
         })
       )
     }
@@ -288,6 +288,15 @@ var userStream = function (src) {
         profile.firstChild.appendChild(tools.getFollowers(src))
       }
     }))    
+
+    buttons.appendChild(h('button.btn', 'Generate blocks', {
+      onclick: function () {
+        profile.firstChild.appendChild(tools.getBlocks(src))
+        profile.firstChild.appendChild(tools.getBlocked(src))
+      }
+    }))    
+
+
 }
 
 var msgThread = function (src) {

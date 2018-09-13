@@ -13,6 +13,67 @@ var config = require('./config')()
 
 var id = require('./keys').id
 
+
+module.exports.getBlocks = function (src) {
+  var blocks = h('div.blocks', 'Blocking: ')
+
+  pull(
+    sbot.query({query: [{$filter: { value: { author: src, content: {type: 'contact'}}}}], live: true}),
+    pull.drain(function (msg) {
+      if (msg.value) {
+        if (msg.value.content.blocking == true) {
+          console.log(msg.value)
+          var gotIt = document.getElementById('blocks:' + msg.value.content.contact.substring(0, 44))
+          if (gotIt == null) {
+            blocks.appendChild(h('a#blocks:'+ msg.value.content.contact.substring(0, 44), {title: avatar.cachedName(msg.value.content.contact).textContent, href: '#' + msg.value.content.contact}, h('span.avatar--small', avatar.cachedImage(msg.value.content.contact))))
+          }
+        }
+        if (msg.value.content.blocking == false) {
+          var gotIt = document.getElementById('blocks:' + msg.value.content.contact.substring(0, 44))
+          if (gotIt != null) {
+            gotIt.outerHTML = ''
+          }
+        }
+      }
+    })
+  )
+
+  return blocks 
+
+}
+
+module.exports.getBlocked = function (src) {
+  var blocked = h('div.blocked', 'Blocked by: ')
+
+  pull(
+    sbot.query({query: [{$filter: { value: { content: {type: 'contact', contact: src}}}}], live: true}),
+    pull.drain(function (msg) {
+      if (msg.value) {
+        if (msg.value.content.blocking == true) {
+          console.log(msg.value)
+          var gotIt = document.getElementById('blocked:' + msg.value.content.contact.substring(0, 44))
+          if (gotIt == null) {
+            blocked.appendChild(h('a#blocked:'+ msg.value.author.substring(0, 44), {title: avatar.cachedName(msg.value.author).textContent, href: '#' + msg.value.author}, h('span.avatar--small', avatar.cachedImage(msg.value.author))))
+          }
+        }
+        if (msg.value.content.blocking == false) {
+          var gotIt = document.getElementById('blocked:' + msg.value.author.substring(0, 44))
+          if (gotIt != null) {
+            gotIt.outerHTML = ''
+          }
+        }
+      }
+    })
+  )
+
+  return blocked 
+
+}
+
+
+
+
+
 module.exports.getFollowing = function (src) {
   var followingCount = 0
 
@@ -48,7 +109,6 @@ module.exports.getFollowing = function (src) {
   )
   return following
 }
-
 module.exports.getFollowers = function (src) {
   var followerCount = 0
 
