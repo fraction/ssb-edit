@@ -68,6 +68,16 @@ module.exports = function (name, override) {
     gossip: {
       connections: 3
     },
+    connections: {
+      incoming: {
+        net: [{ port: 8008, host: "localhost", scope: "local", "transform": "shs" }],
+        ws: [{ "scope": "public", "transform": "shs" }]
+      },
+      outgoing: {
+        net: [{ transform: "shs" }],
+        ws: [{ "scope": "public", "transform": "shs" }]
+      }
+    },
     path: path.join(HOME, '.' + name),
     timers: {
       connection: 0,

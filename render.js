@@ -293,12 +293,12 @@ module.exports = function (msg) {
   } else {
 
     //FULL FALLBACK
-    message.appendChild(tools.header(msg))
-    message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
+    //message.appendChild(tools.header(msg))
+    //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
 
     //MINI FALLBACK
-    //var fallback = h('span', ' ' + msg.value.content.type)
-    //message.appendChild(tools.mini(msg, fallback))
+    var fallback = h('span', ' ' + msg.value.content.type)
+    message.appendChild(tools.mini(msg, fallback))
     return message 
   }
 }
