@@ -5,6 +5,7 @@ var human = require('human-time')
 var id = require('./keys').id
 var mentions = require('ssb-mentions')
 
+var avatar = require('./avatar')
 var tools = require('./tools')
 
 var mime = require('simple-mime')('application/octect-stream')
@@ -44,8 +45,21 @@ module.exports = function (opts, fallback) {
 
   var composer = h('div.composer')
   var container = h('div.container')
+  var boostName = avatar.cachedName(opts.boostAuthor) 
 
-  if (opts.mentions) {
+  if (opts.boostContent) {
+    var textarea = h('textarea.compose', 'Blah') 
+    var str = opts.boostContent
+    var lines = str.split("\n")
+    for(var i=0; i<lines.length; i++) {
+      lines[i] = "> " + lines[i]
+    }
+    var newContent = lines.join("\n")
+    var content = 'Boosting: ' + opts.boostKey + ' by [' + boostName.textContent + ']('+ opts.boostAuthor + ')\n\n' + newContent
+    textarea.value = content
+  } 
+
+  else if (opts.mentions) {
     var textarea = h('textarea.compose', opts.mentions)
   }
 

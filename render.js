@@ -238,6 +238,7 @@ module.exports = function (msg) {
     var name = avatar.name(msg.value.author)
 
     var buttons = h('div.buttons')
+
     buttons.appendChild(h('button.btn', 'Reply', {
       onclick: function () {
         opts.type = 'post'
@@ -255,6 +256,28 @@ module.exports = function (msg) {
         message.parentNode.insertBefore(compose, message.nextSibling)
       }
     }))
+
+    buttons.appendChild(h('button.btn', 'Boost', {
+      onclick: function () {
+        opts.type = 'post'
+        opts.mentions = '[' + name.textContent + '](' + msg.value.author + ')'
+        if (msg.value.content.recps) {
+          opts.recps = msg.value.content.recps
+        }
+        var r = message.childNodes.length - 1
+        delete opts.updated
+        delete opts.original
+        delete fallback.messageText
+        opts.boostContent = msg.value.content.text
+        opts.boostKey = msg.key
+        opts.boostAuthor = msg.value.author
+        fallback.buttons = message.childNodes[r]
+        var compose = h('div.message#re:' + msg.key.substring(0, 44), composer(opts, fallback))
+        message.removeChild(message.childNodes[r])
+        message.parentNode.insertBefore(compose, message.nextSibling)
+      }
+    }))
+
 
     if (msg.value.author == id)
       buttons.appendChild(h('button.btn', 'Edit', {
