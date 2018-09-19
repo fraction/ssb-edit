@@ -45,8 +45,9 @@ module.exports = function (opts, fallback) {
 
   var composer = h('div.composer')
   var container = h('div.container')
-  var boostName = avatar.cachedName(opts.boostAuthor) 
-
+  if (opts.boostAuthor) {
+    var boostName = avatar.cachedName(opts.boostAuthor) 
+  } 
   if (opts.boostContent) {
     var textarea = h('textarea.compose', 'Blah') 
     var str = opts.boostContent
