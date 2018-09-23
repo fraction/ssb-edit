@@ -70,7 +70,7 @@ module.exports = function (name, override) {
     },
     connections: {
       incoming: {
-        net: [{ scope: "public", transform: "shs" }],
+        net: [{ port: 8008, scope: "public", transform: "shs" }],
         ws: [{ scope: "public", transform: "shs" }]
       },
       outgoing: {
