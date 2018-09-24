@@ -75,7 +75,7 @@ module.exports = function (name, override) {
       },
       outgoing: {
         net: [{ transform: "shs" }],
-        ws: [{ scope: "public", transform: "shs" }]
+        ws: [{  transform: "shs" }]
       }
     },
     path: path.join(HOME, '.' + name),
