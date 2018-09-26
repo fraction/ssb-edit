@@ -538,8 +538,6 @@ module.exports = function () {
   console.log(src)
 
   if (src.substring(52, 59) == '?unbox=') {
-    //var msgId = src.substring(0, 52)
-    //var unbox = src.substring(59)
     privateMsg(src) 
   } else if (ref.isFeed(src)) {
     userStream(src)
