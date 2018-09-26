@@ -72,8 +72,8 @@ module.exports = {
     return sbot.query.read(query)
   }),
   get: rec.async(function (key, cb) {
-    if('function' !== typeof cb)
-      throw new Error('cb must be function')
+    //if('function' !== typeof cb)
+      //throw new Error('cb must be function')
     if(CACHE[key]) cb(null, CACHE[key])
     else sbot.get(key, function (err, value) {
       if(err) return cb(err)

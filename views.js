@@ -299,6 +299,27 @@ var userStream = function (src) {
 
 }
 
+var privateMsg = function (src) {
+  var content = h('div.content')
+  var screen = document.getElementById('screen')
+  screen.appendChild(hyperscroll(content))
+
+  sbot.get(src, function (err, data) {
+    if (err) {
+      var message = h('div.message', 'Missing message!')
+      content.appendChild(message)
+    }
+    if (data) {
+      console.log(data)
+      data.value = data
+      data.key = src
+
+      content.appendChild(render(data))
+    }
+
+  })
+}
+
 var msgThread = function (src) {
 
   var content = h('div.content')
@@ -515,7 +536,12 @@ function hash () {
 module.exports = function () {
   var src = hash()
   console.log(src)
-  if (ref.isFeed(src)) {
+
+  if (src.substring(52, 59) == '?unbox=') {
+    //var msgId = src.substring(0, 52)
+    //var unbox = src.substring(59)
+    privateMsg(src) 
+  } else if (ref.isFeed(src)) {
     userStream(src)
   } else if (ref.isMsg(src)) {
     msgThread(src)

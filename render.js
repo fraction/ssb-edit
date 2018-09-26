@@ -19,7 +19,6 @@ function hash () {
 module.exports = function (msg) {
   var message = h('div.message#' + msg.key.substring(0, 44))
 
-
   if (!localStorage[msg.value.author])
     var cache = {mute: false}
   else
@@ -71,7 +70,10 @@ module.exports = function (msg) {
     return message
   }
   else if (msg.value.content.type == 'contact') {
-    var contact = h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact))
+    if (msg.value.content.contact) {
+      var contact = h('a', {href: '#' + msg.value.content.contact}, avatar.name(msg.value.content.contact))
+    } else { var contact = h('p', 'no contact named')}
+
     if (msg.value.content.following == true) {
       var following = h('span', ' follows ', contact)
       message.appendChild(tools.mini(msg, following))
@@ -88,7 +90,8 @@ module.exports = function (msg) {
       var unblocking = h('span', ' unblocks ', contact)
       message.appendChild(tools.mini(msg, unblocking))
     }
-    return message
+    return message 
+    
   }
   
   else if (msg.value.content.type == 'git-update') {
