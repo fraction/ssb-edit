@@ -70,12 +70,12 @@ module.exports = function (name, override) {
     },
     connections: {
       incoming: {
-        net: [{ port: 8008, scope: "public", transform: "shs" }],
-        ws: [{ scope: "public", transform: "shs" }]
+        net: [{ port: 8008, host: "localhost", scope: "local", "transform": "shs" }],
+        ws: [{ "scope": "public", "transform": "shs" }]
       },
       outgoing: {
         net: [{ transform: "shs" }],
-        ws: [{  transform: "shs" }]
+        ws: [{ "scope": "public", "transform": "shs" }]
       }
     },
     path: path.join(HOME, '.' + name),

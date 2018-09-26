@@ -42,7 +42,6 @@ if (argv[0] == 'server') {
     .use(require('ssb-search'))
     .use(require('scuttlebot/plugins/invite'))
     .use(require('scuttlebot/plugins/local'))
-    //.use(require('ssb-ws'))
     .use(require('decent-ws'))
     .use({
       name: 'serve',
@@ -51,7 +50,7 @@ if (argv[0] == 'server') {
         sbot.ws.use(function (req, res, next) {
           var send = config
           delete send.keys // very important to keep this, as it removes the server keys from the config before broadcast
-          send.address = sbot.getAddress('ws')
+          send.address = sbot.ws.getAddress()
           sbot.invite.create({modern: true}, function (err, cb) {
             send.invite = cb
           })
