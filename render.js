@@ -163,7 +163,7 @@ module.exports = function (msg) {
     message.appendChild(h('div.message__body', tools.markdown(msg.value.content.text)))
 
     pull(
-      sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}], limit: 100, live: true}),
+      sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}], limit: 100}),
       pull.drain(function (update) {
         if (update.sync) {
         } else {
@@ -225,7 +225,7 @@ module.exports = function (msg) {
     message.appendChild(h('div.message__body', tools.markdown(msg.value.content.text)))
 
     pull(
-      sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}], limit: 100, live: true}),
+      sbot.query({query: [{$filter: {value: {content: {type: 'edit', original: msg.key}}}}], limit: 100}),
       pull.drain(function (update) {
         if (update.sync) { 
         } else {
