@@ -60,7 +60,6 @@ module.exports = function (msg) {
   }
 
 
-
   else if (msg.value.content.type == 'scat_message') {
     var src = hash()
     if (src != 'backchannel') {
@@ -104,19 +103,19 @@ module.exports = function (msg) {
 
     message.appendChild(reponame)
 
-    pull(
-      sbot.get(msg.value.content.repo, function (err, data) {
-        //if (err) throw err
-        if (data.content.name) {
-          actualname = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, '%' + data.content.name))
-          reponame.parentNode.replaceChild(actualname, reponame)
-        } else { console.log('no repo name') }
-      })
-    )
+    var ssbAvatar = require('ssb-avatar')
+
+    ssbAvatar(sbot, id, msg.value.content.repo, function (err, data) {
+      if (data)
+       var actualname = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, '%' + data.name))
+       reponame.parentNode.replaceChild(actualname, reponame)
+    })     
+
     message.appendChild(cloneurl)
 
     var commits = h('ul')
-    if (msg.value.content.commits[0]) {
+    //if (msg.value.content.commits[0]) {
+    if (msg.value.content.commits) {
       msg.value.content.commits.map(function (commit) {
         commits.appendChild(h('li', h('code', commit.sha1), ' - ', commit.title))
       })

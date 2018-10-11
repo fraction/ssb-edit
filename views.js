@@ -354,7 +354,7 @@ var msgThread = function (src) {
       }
       if (data.value.content.type == 'git-repo') {
         pull(
-          sbot.backlinks({query: [{$filter: {value: {content: {type: 'git-update'}}, dest: src}}], reverse: true}),
+          sbot.backlinks({query: [{$filter: {value: {content: {type: 'git-update'}}, dest: src}}]}),
           pull.drain(function (msg) {
             if (msg.value) {
               content.appendChild(render(msg))
