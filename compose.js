@@ -49,14 +49,14 @@ module.exports = function (opts, fallback) {
     var boostName = avatar.cachedName(opts.boostAuthor) 
   } 
   if (opts.boostContent) {
-    var textarea = h('textarea.compose', 'Blah') 
+    var textarea = h('textarea.compose') 
     var str = opts.boostContent
     var lines = str.split("\n")
     for(var i=0; i<lines.length; i++) {
       lines[i] = "> " + lines[i]
     }
     var newContent = lines.join("\n")
-    var content = 'Boosting: ' + opts.boostKey + ' by [' + boostName.textContent + ']('+ opts.boostAuthor + ')\n\n' + newContent
+    var content = 'Boosting: ' + opts.boostKey + '\n\n' + newContent + '-[' + boostName.textContent + ']('+ opts.boostAuthor + ')'
     textarea.value = content
   } 
 
