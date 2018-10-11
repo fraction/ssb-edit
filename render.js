@@ -9,6 +9,7 @@ var tools = require('./tools')
 var config = require('./config')()
 var id = require('./keys').id
 var avatar = require('./avatar')
+var ssbAvatar = require('ssb-avatar')
 
 var diff = require('diff')
 
@@ -103,7 +104,6 @@ module.exports = function (msg) {
 
     message.appendChild(reponame)
 
-    var ssbAvatar = require('ssb-avatar')
 
     ssbAvatar(sbot, id, msg.value.content.repo, function (err, data) {
       if (data)
@@ -129,14 +129,19 @@ module.exports = function (msg) {
   }
   else if (msg.value.content.type == 'git-repo') {
     message.appendChild(tools.header(msg))
-    if (msg.value.content.name) {
-      message.appendChild(h('p', h('a', {href: '#' + msg.key}, '%' + msg.value.content.name)))
-    } else {
-      message.appendChild(h('p', h('a', {href: '#' + msg.key}, msg.key)))
-    }
+
+    var reponame = h('p', 'git-ssb repo ', h('a', {href: '#' + msg.key}, msg.key))
+   
+    message.appendChild(reponame)
+
+    ssbAvatar(sbot, id, msg.key, function (err, data) {
+      if (data)
+       var actualname = h('p', 'git-ssb repo ', h('a', {href: '#' + msg.key}, '%' + data.name))
+       reponame.parentNode.replaceChild(actualname, reponame)
+    })
+
     var cloneurl = h('pre', 'git clone ssb://' + msg.key)
     message.appendChild(cloneurl)
-    //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
     return message  
   }
 
