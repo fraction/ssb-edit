@@ -106,9 +106,10 @@ module.exports = function (msg) {
 
 
     ssbAvatar(sbot, id, msg.value.content.repo, function (err, data) {
-      if (data)
-       var actualname = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, '%' + data.name))
-       reponame.parentNode.replaceChild(actualname, reponame)
+      if (data) {
+        var actualname = h('p', 'pushed to ', h('a', {href: '#' + msg.value.content.repo}, '%' + data.name))
+        reponame.parentNode.replaceChild(actualname, reponame)
+      }
     })     
 
     message.appendChild(cloneurl)
