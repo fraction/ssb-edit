@@ -29,7 +29,21 @@ module.exports = function (msg) {
     var muted = h('span', ' muted')
     message.appendChild(tools.mini(msg, muted))
     return message
-  } 
+  }
+
+  else if (msg.value.content.type == 'queue') {
+    if (msg.value.content.queue == true) {
+      var content = h('span', ' added ', tools.messageLink(msg.value.content.message), ' to their ', h('a', {href: '#queue'}, 'queue'))
+      message.appendChild(tools.mini(msg, content))
+    } 
+    if (msg.value.content.queue == false) {
+      var content = h('span', ' removed ', tools.messageLink(msg.value.content.message), ' from their ', h('a', {href: '#queue'}, 'queue'))
+      message.appendChild(tools.mini(msg, content))
+
+    }
+    return message
+  }
+ 
   else if (msg.value.content.type == 'edit') {
     message.appendChild(tools.header(msg))
     var current = msg.value.content.text
@@ -38,7 +52,6 @@ module.exports = function (msg) {
         fragment = document.createDocumentFragment()
         var previous = updated.content.text
         var ready = diff.diffWords(previous, current)
-        console.log(ready)
         ready.forEach(function (part) {
           if (part.added === true) {
             color = 'cyan'
@@ -306,6 +319,7 @@ module.exports = function (msg) {
         }
       }))
 
+    buttons.appendChild(tools.queueButton(msg))
     buttons.appendChild(tools.star(msg))
     message.appendChild(buttons)
     return message
@@ -324,12 +338,12 @@ module.exports = function (msg) {
   } else {
 
     //FULL FALLBACK
-    //message.appendChild(tools.header(msg))
-    //message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
+    message.appendChild(tools.header(msg))
+    message.appendChild(h('pre', tools.rawJSON(msg.value.content)))
 
     //MINI FALLBACK
-    var fallback = h('span', ' ' + msg.value.content.type)
-    message.appendChild(tools.mini(msg, fallback))
+    //var fallback = h('span', ' ' + msg.value.content.type)
+    //message.appendChild(tools.mini(msg, fallback))
     return message 
   }
 }

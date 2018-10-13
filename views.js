@@ -72,6 +72,40 @@ var privateStream = function () {
   )
 }
 
+var queueStream = function () {
+  var content = h('div.content')
+  var screen = document.getElementById('screen')
+  screen.appendChild(hyperscroll(content))
+
+  pull(
+    sbot.query({query: [{$filter: { value: {author: id, content: {type: 'queue'}}}}]}),
+    pull.drain(function (msg) {
+      if (msg.value) {
+        if (ref.isMsg(msg.value.content.message)) {
+          if (msg.value.content.queue == true) {
+            sbot.get(msg.value.content.message, function (err, data) {
+              if (data) {
+                var message = {}
+                message.value = data
+                message.key = msg.value.content.message
+                content.appendChild(render(message))
+              }
+            })
+          } 
+          if (msg.value.content.queue == false) {
+            setTimeout(function () {
+              var gotIt = document.getElementById(msg.value.content.message.substring(0,44))
+              if (gotIt != null) {
+                gotIt.outerHTML = ''
+              } 
+            }, 100)
+          }
+        }
+      }
+    })
+  ) 
+}
+
 var mentionsStream = function () {
   var content = h('div.content')
 
@@ -545,6 +579,8 @@ module.exports = function () {
     msgThread(src)
   } else if (src == 'mentions') {
     mentionsStream()
+  } else if (src == 'queue') {
+    queueStream()
   } else if (src == 'about') {
     about()
   } else if (src == 'backchannel') {

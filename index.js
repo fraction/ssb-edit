@@ -51,6 +51,7 @@ var nav = h('div.navbar',
     h('li', h('a', {href: '#' }, 'All')),
     h('li', h('a', {href: '#private' }, 'Private')),
     h('li', h('a', {href: '#mentions' }, 'Mentions')),
+    h('li', h('a', {href: '#queue'}, 'Queue')),
     h('li', h('a', {href: '#key' }, 'Key')),
     h('li.right', h('a', {href: '#about'}, '?')),
     h('form.search', { 

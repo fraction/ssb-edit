@@ -70,10 +70,6 @@ module.exports.getBlocked = function (src) {
 
 }
 
-
-
-
-
 module.exports.getFollowing = function (src) {
   var followingCount = 0
 
@@ -109,6 +105,7 @@ module.exports.getFollowing = function (src) {
   )
   return following
 }
+
 module.exports.getFollowers = function (src) {
   var followerCount = 0
 
@@ -144,6 +141,65 @@ module.exports.getFollowers = function (src) {
   )
 
   return followers
+}
+
+module.exports.queueButton = function (src) {
+   var queueButton = h('span.queue:' + src.key.substring(0,44))
+
+   var addToQueue = h('button.btn.right', 'Queue', {
+    onclick: function () {
+      var content = {
+        type: 'queue', 
+        message: src.key,
+        queue: true 
+      }
+      sbot.publish(content, function (err, publish) {
+        if (err) throw err
+        console.log(publish)
+      }) 
+    }
+  })
+
+  var removeFromQueue = h('button.btn.right#', 'Done', {
+    onclick: function () {
+      var content = {
+        type: 'queue', 
+        message: src.key,
+        queue: false
+      }
+      sbot.publish(content, function (err, publish) {
+        if (err) throw err
+        console.log(publish)
+        if (window.location.hash.substring(1) == 'queue') {
+          setTimeout(function () {
+            var gotIt = document.getElementById(src.key.substring(0,44))
+            if (gotIt != null) {
+              gotIt.outerHTML = ''
+            }
+          }, 100)
+
+        }
+      }) 
+    }
+  })
+
+  pull(
+    sbot.query({query: [{$filter: { value: { author: id, content: {type: 'queue', message: src.key}}}}], live: true}),
+    pull.drain(function (msg) { 
+      if (msg.value) {
+        if (msg.value.content.queue == true) {
+          queueButton.replaceChild(removeFromQueue, addToQueue)
+        } 
+        if (msg.value.content.queue == false) {
+          queueButton.replaceChild(addToQueue, removeFromQueue)
+        }
+      }
+    })
+  )
+
+  queueButton.appendChild(addToQueue)
+
+  return queueButton
 }
 
 module.exports.follow = function (src) {
