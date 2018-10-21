@@ -36,7 +36,7 @@
     "pull-stream": "^3.6.9",
     "pull-stringify": "^2.0.0",
     "rc": "^1.2.8",
-    "scuttlebot": "^12.2.3",
+    "scuttlebot": "^13.0.0",
     "simple-mime": "^0.1.0",
     "split-buffer": "^1.0.0",
     "ssb-avatar": "^0.2.0",

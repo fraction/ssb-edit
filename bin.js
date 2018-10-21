@@ -10,11 +10,7 @@ var muxrpcli = require('muxrpcli')
 var SEC = 1e3
 var MIN = 60*SEC
 
-var network = 'ssb'
-//var network = 'decent'
-//var network = 'testnet'
-
-var config = require('./config/inject')(network)
+var config = require('./config/inject')()
 
 config.keys = ssbKeys.loadOrCreateSync(path.join(config.path, 'secret'))
 
