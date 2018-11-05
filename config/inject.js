@@ -17,6 +17,7 @@ module.exports = function (name, override) {
     //there have been some reports of seemingly non-private
     //ipv6 addresses being returned and not working.
     //https://github.com/ssbc/scuttlebot/pull/102
+    allowPrivate: true,
     party: true,
     host: nonPrivate.v4 || '',
     port: 8008,
@@ -63,8 +64,10 @@ module.exports = function (name, override) {
   if (!result.connections.incoming) {
     result.connections.incoming = {
       net: [{ host: result.host, port: result.port, scope: "public", "transform": "shs" }],
-      ws: [{ host: result.host, scope: "device", "transform": "shs" }]
+      ws: [{ host: result.host, port: result.ws.port, scope: "public", "transform": "shs" }]
     }
   }
   return result
 }
+
+

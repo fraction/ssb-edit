@@ -1,72 +1,103 @@
-var fs = require('fs')
-var path = require('path')
-var ssbKeys = require('ssb-keys')
-var stringify = require('pull-stringify')
+#! /usr/bin/env node
+
+var fs           = require('fs')
+var path         = require('path')
+var pull         = require('pull-stream')
+var toPull       = require('stream-to-pull-stream')
+var File         = require('pull-file')
+var explain      = require('explain-error')
+var ssbKeys      = require('ssb-keys')
+var stringify    = require('pull-stringify')
+var createHash   = require('multiblob/util').createHash
+var minimist     = require('minimist')
+var muxrpcli     = require('muxrpcli')
+var cmdAliases   = require('scuttlebot/lib/cli-cmd-aliases')
+var ProgressBar  = require('scuttlebot/lib/progress')
+var packageJson  = require('scuttlebot/package.json')
 var open = require('opn')
-var home = require('os-homedir')()
-var nonPrivate = require('non-private-ip')
-var muxrpcli = require('muxrpcli')
 
-var SEC = 1e3
-var MIN = 60*SEC
-
-var config = require('./config/inject')()
-
-config.keys = ssbKeys.loadOrCreateSync(path.join(config.path, 'secret'))
-
-var mvdClient = fs.readFileSync(path.join('./build/index.html'))
-
-var manifestFile = path.join(config.path, 'manifest.json')
-
+//get config as cli options after --, options before that are
+//options to the command.
 var argv = process.argv.slice(2)
 var i = argv.indexOf('--')
 var conf = argv.slice(i+1)
 argv = ~i ? argv.slice(0, i) : argv
 
+var config = require('./config/inject')(process.env.ssb_appname, minimist(conf))
+
+var keys = ssbKeys.loadOrCreateSync(path.join(config.path, 'secret'))
+if(keys.curve === 'k256')
+  throw new Error('k256 curves are no longer supported,'+
+                  'please delete' + path.join(config.path, 'secret'))
+
+var compiledClient = fs.readFileSync(path.join('./build/index.html'))
+
+var manifestFile = path.join(config.path, 'manifest.json')
+
 if (argv[0] == 'server') {
-  
+  console.log(packageJson.name, packageJson.version, config.path, 'logging.level:'+config.logging.level)
+  console.log('my key ID:', keys.public)
+
+  // special server command:
+  // import sbot and start the server
+
   var createSbot = require('scuttlebot')
+    .use(require('scuttlebot/plugins/unix-socket'))
+    .use(require('scuttlebot/plugins/no-auth'))
+    .use(require('scuttlebot/plugins/plugins'))
     .use(require('scuttlebot/plugins/master'))
     .use(require('scuttlebot/plugins/gossip'))
     .use(require('scuttlebot/plugins/replicate'))
     .use(require('ssb-friends'))
     .use(require('ssb-blobs'))
-    .use(require('ssb-backlinks'))
+    .use(require('scuttlebot/plugins/invite'))
+    .use(require('scuttlebot/plugins/local'))
+    .use(require('scuttlebot/plugins/logging'))
     .use(require('ssb-query'))
     .use(require('./mvd-indexes'))
     .use(require('ssb-links'))
+    .use(require('ssb-ws'))
     .use(require('ssb-ebt'))
-    .use(require('ssb-search'))
-    .use(require('scuttlebot/plugins/invite'))
-    .use(require('scuttlebot/plugins/local'))
-    .use(require('decent-ws'))
     .use({
       name: 'serve',
       version: '1.0.0',
       init: function (sbot) {
         sbot.ws.use(function (req, res, next) {
           var send = config
-          delete send.keys // very important to keep this, as it removes the server keys from the config before broadcast
-          send.address = sbot.ws.getAddress()
-          sbot.invite.create({modern: true}, function (err, cb) {
+          delete send.keys
+          /*sbot.invite.create(1, function (err, cb) {
             send.invite = cb
-          })
+          })*/
+          send.address = sbot.getAddress()
           if(req.url == '/')
-            res.end(mvdClient)
+            res.end(compiledClient)
           if(req.url == '/get-config')
             res.end(JSON.stringify(send))
           else next()
         })
       }
     })
-  
+  // add third-party plugins
+  require('scuttlebot/plugins/plugins').loadUserPlugins(createSbot, config)
+
+  // start server
+
   open('http://localhost:' + config.ws.port, {wait: false})
-  
+
+  config.keys = keys
   var server = createSbot(config)
-  
+
+  // write RPC manifest to ~/.ssb/manifest.json
   fs.writeFileSync(manifestFile, JSON.stringify(server.getManifest(), null, 2))
+
+  if(process.stdout.isTTY && (config.logging.level != 'info'))
+    ProgressBar(server.progress)
 } else {
 
+  // normal command:
+  // create a client connection to the server
+
+  // read manifest.json
   var manifest
   try {
     manifest = JSON.parse(fs.readFileSync(manifestFile))
@@ -78,33 +109,69 @@ if (argv[0] == 'server') {
   }
 
   // connect
-  require('ssb-client')(config.keys, {
+  require('ssb-client')(keys, {
     manifest: manifest,
     port: config.port,
     host: config.host||'localhost',
     caps: config.caps,
-    key: config.key || config.keys.id
+    key: config.key || keys.id
   }, function (err, rpc) {
     if(err) {
       if (/could not connect/.test(err.message)) {
-        console.log('Error: Could not connect to the scuttlebot server.')
-        console.log('Use the "server" command to start it.')
+        var serverAddr = (config.host || 'localhost') + ":" + config.port;
+        console.error('Error: Could not connect to the scuttlebot server ' + serverAddr)
+        console.error('Use the "server" command to start it.')
         if(config.verbose) throw err
         process.exit(1)
       }
       throw err
     }
 
-    // add some extra commands
-    manifest.version = 'async'
-    manifest.config = 'sync'
-    rpc.version = function (cb) {
-      console.log(require('./package.json').version)
-      cb()
+    // add aliases
+    for (var k in cmdAliases) {
+      rpc[k] = rpc[cmdAliases[k]]
+      manifest[k] = manifest[cmdAliases[k]]
     }
+
+    // add some extra commands
+//    manifest.version = 'async'
+    manifest.config = 'sync'
+//    rpc.version = function (cb) {
+//      console.log(packageJson.version)
+//      cb()
+//    }
     rpc.config = function (cb) {
       console.log(JSON.stringify(config, null, 2))
       cb()
+    }
+
+    // HACK
+    // we need to output the hash of blobs that are added via blobs.add
+    // because muxrpc doesnt support the `sink` callback yet, we need this manual override
+    // -prf
+    if (process.argv[2] === 'blobs.add') {
+      var filename = process.argv[3]
+      var source =
+        filename ? File(process.argv[3])
+      : !process.stdin.isTTY ? toPull.source(process.stdin)
+      : (function () {
+        console.error('USAGE:')
+        console.error('  blobs.add <filename> # add a file')
+        console.error('  source | blobs.add   # read from stdin')
+        process.exit(1)
+      })()
+      var hasher = createHash('sha256')
+      pull(
+        source,
+        hasher,
+        rpc.blobs.add(function (err) {
+          if (err)
+            throw err
+          console.log('&'+hasher.digest)
+          process.exit()
+        })
+      )
+      return
     }
 
     // run commandline flow
