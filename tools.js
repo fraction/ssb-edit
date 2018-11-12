@@ -188,10 +188,12 @@ module.exports.queueButton = function (src) {
     pull.drain(function (msg) { 
       if (msg.value) {
         if (msg.value.content.queue == true) {
-          queueButton.replaceChild(removeFromQueue, addToQueue)
+          queueButton.removeChild(queueButton.childNodes[0])
+          queueButton.appendChild(removeFromQueue)
         } 
         if (msg.value.content.queue == false) {
-          queueButton.replaceChild(addToQueue, removeFromQueue)
+          queueButton.removeChild(queueButton.childNodes[0])
+          queueButton.appendChild(addToQueue)
         }
       }
     })
