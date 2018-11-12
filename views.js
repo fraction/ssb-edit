@@ -106,7 +106,7 @@ var queueStream = function () {
   ) 
 }
 
-var mentionsStream = function () {
+var mentionsStream = function (src) {
   var content = h('div.content')
 
   var screen = document.getElementById('screen')
@@ -129,7 +129,7 @@ var mentionsStream = function () {
       reverse: true, 
       index: 'DTA',
       live: false,
-      query: [{$filter: {dest: id}}]
+      query: [{$filter: {dest: src}}]
     }),
     stream.bottom(content)
   )
@@ -140,7 +140,7 @@ var mentionsStream = function () {
       old: false,
       index: 'DTA',
       live: true,
-      query: [{$filter: {dest: id}}]
+      query: [{$filter: {dest: src}}]
     }),
     stream.top(content)
   )
@@ -329,7 +329,7 @@ var userStream = function (src) {
         profile.firstChild.appendChild(tools.getBlocked(src))
       }
     }))    
-
+    buttons.appendChild(h('a', {href: '#wall/' + src}, h('button.btn', avatar.name(src), "'s wall")))
 
 }
 
@@ -569,7 +569,6 @@ function hash () {
 
 module.exports = function () {
   var src = hash()
-  console.log(src)
 
   if (src.substring(52, 59) == '?unbox=') {
     privateMsg(src) 
@@ -577,8 +576,8 @@ module.exports = function () {
     userStream(src)
   } else if (ref.isMsg(src)) {
     msgThread(src)
-  } else if (src == 'mentions') {
-    mentionsStream()
+  } else if (ref.isFeed(src.substring(5))) {
+    mentionsStream(src.substring(5))
   } else if (src == 'queue') {
     queueStream()
   } else if (src == 'about') {

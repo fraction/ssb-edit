@@ -54,6 +54,8 @@ if (argv[0] == 'server') {
     .use(require('scuttlebot/plugins/local'))
     .use(require('scuttlebot/plugins/logging'))
     .use(require('ssb-query'))
+    .use(require('ssb-backlinks'))
+    .use(require('ssb-search'))
     .use(require('./mvd-indexes'))
     .use(require('ssb-links'))
     .use(require('ssb-ws'))
