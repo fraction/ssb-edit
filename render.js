@@ -344,6 +344,6 @@ module.exports = function (msg) {
     //MINI FALLBACK
     //var fallback = h('span', ' ' + msg.value.content.type)
     //message.appendChild(tools.mini(msg, fallback))
-    return message 
+    return h('div')//message 
   }
 }

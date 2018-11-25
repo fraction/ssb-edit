@@ -1,6 +1,6 @@
 {
   "name": "mvd",
-  "version": "1.14.1",
+  "version": "1.15.0",
   "description": "minimum viable decent",
   "main": "index.js",
   "scripts": {
@@ -18,10 +18,9 @@
   "license": "MIT",
   "dependencies": {
     "dataurl-": "^0.1.0",
-    "decent-ws": "1.0.4",
+    "decent-ws": "^1.1.0",
     "deep-extend": "^0.6.0",
     "diff": "^3.5.0",
-    "ecstatic": "^3.3.0",
     "flumeview-query": "^7.1.0",
     "human-time": "0.0.1",
     "hyperfile": "^2.0.0",
@@ -38,7 +37,7 @@
     "pull-stream": "^3.6.9",
     "pull-stringify": "^2.0.0",
     "rc": "^1.2.8",
-    "scuttlebot": "^13.0.3",
+    "scuttlebot": "13.0.3",
     "simple-mime": "^0.1.0",
     "split-buffer": "^1.0.0",
     "ssb-avatar": "^0.2.0",

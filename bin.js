@@ -58,7 +58,7 @@ if (argv[0] == 'server') {
     .use(require('ssb-search'))
     .use(require('./mvd-indexes'))
     .use(require('ssb-links'))
-    .use(require('ssb-ws'))
+    .use(require('decent-ws'))
     .use(require('ssb-ebt'))
     .use({
       name: 'serve',
