@@ -43,6 +43,42 @@ var privateStream = function () {
 
   function createStream (opts) {
     return pull(
+      Next(sbot.query, opts, ['value', 'timestamp']),
+      pull.map(function (msg) {
+        if (msg.value) {
+          if (msg.value.timestamp > Date.now()) {
+            return h('div.future')
+          } else {
+            return render(msg)
+          }
+        }
+      })
+    )
+  }
+
+  pull(
+    createStream({
+      limit: 10,
+      reverse: true,
+      live: false,
+      query: [{$filter: { value: { private: true, timestamp: { $gt: 0 }}}}]
+    }),
+    stream.bottom(content)
+  )
+
+  pull(
+    createStream({
+      limit: 10,
+      old: false,
+      live: true,
+      query: [{$filter: { value: { private: true, timestamp: { $gt: 0 }}}}]
+    }),
+    stream.top(content)
+  )
+
+
+  /*function createStream (opts) {
+    return pull(
       More(sbot.createLogStream, opts),
       pull.filter(function (msg) {
         return 'string' == typeof msg.value.content
@@ -69,7 +105,7 @@ var privateStream = function () {
   pull(
     createStream({reverse: true, live: false, limit: 1000}),
     stream.bottom(content)
-  )
+  )*/
 }
 
 var queueStream = function () {
