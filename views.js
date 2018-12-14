@@ -351,6 +351,7 @@ var userStream = function (src) {
     buttons.appendChild(writeMessage)
     buttons.appendChild(writePrivate)
     buttons.appendChild(tools.follow(src))
+    buttons.appendChild(tools.block(src))
 
     buttons.appendChild(h('button.btn', 'Generate follows', {
       onclick: function () {

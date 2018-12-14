@@ -203,6 +203,77 @@ module.exports.queueButton = function (src) {
 
   return queueButton
 }
+module.exports.block = function (src) {
+   var button = h('span.button')
+
+   var followButton = h('button.btn', 'Block (Private)', avatar.name(src), {
+    onclick: function () {
+      var content = {
+        type: 'contact', 
+        contact: src, 
+        blocking: true,
+        recps: id
+      }
+      sbot.publish(content, function (err, publish) {
+        if (err) throw err
+        console.log(publish)
+      }) 
+    }
+  })
+
+  var unfollowButton = h('button.btn', 'Unblock (Private)', avatar.name(src), {
+    onclick: function () {
+      var content = {
+        type: 'contact', 
+        contact: src, 
+        blocking: false,
+        recps: id
+      }
+      sbot.publish(content, function (err, publish) {
+        if (err) throw err
+        console.log(publish)
+      }) 
+    }
+  })
+
+  pull(
+    sbot.query({query: [{$filter: { value: { author: id, content: {type: 'contact', contact: src}}}}], live: true}),
+    pull.drain(function (msg) { 
+      if (msg.value) {
+        if (msg.value.content.blocking == true) {
+            button.removeChild(button.firstChild)
+            button.appendChild(unfollowButton) 
+          } 
+        if (msg.value.content.blocking == false) {
+          button.removeChild(button.firstChild)
+          button.appendChild(followButton) 
+        }
+      }
+    })
+  )
+
+  button.appendChild(followButton)
+
+  return button
+}
+
+module.exports.box = function (content) {
+  return ssbKeys.box(content, content.recps.map(function (e) {
+    return ref.isFeed(e) ? e : e.link
+  }))
+}
+
+module.exports.publish = function (content, cb) {
+  if(content.recps)
+    content = exports.box(content)
+  sbot.publish(content, function (err, msg) {
+    if(err) throw err
+    console.log('Published!', msg)
+    if(cb) cb(err, msg)
+  })
+}
+
+
 
 module.exports.follow = function (src) {
    var button = h('span.button')
@@ -271,6 +342,8 @@ module.exports.publish = function (content, cb) {
     if(cb) cb(err, msg)
   })
 }
+
+
 
 module.exports.mute = function (src) {
   if (!localStorage[src])
