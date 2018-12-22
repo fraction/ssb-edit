@@ -12,14 +12,14 @@
 
 ## Install
 
-```
+```sh
 ssb-server plugins.install ssb-edit
 ssb-server plugins.enable ssb-edit
 ```
 
 ## Usage
 
-```
+```console
 $ ssb-server get %DVSBTpCJWO18yeiRJ0uSf3al7R59aW3IfVZqEifiEeM=.sha256 | jq .content.text
 [@kas](@RuNxm8SRujPcJx6GjtTQHp6hprAFv5voEkcvoAkB8Pk=.ed25519) [@Musickiller's work PC](@YtKbCLteE2BbMG0G6nyAsSYECOpE/Iz6XsNyohOCbic=.ed25519) Yes, we have [mutable messages](PtxLfewN03z3NJ0b+oBDeigt0z5IWTQIYoKyUB5/8VQ=.sha256) in [%mvd](%NPNNvcnTMZUFZSWl/2Z4XX+YSdqsqOhyPacp+lgpQUw=.sha256)
 
